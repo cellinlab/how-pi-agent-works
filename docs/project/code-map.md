@@ -1,6 +1,6 @@
 # Demo 到项目的映射
 
-四个 Demo 不是孤立练习。它们分别对应教学版 Agent 后端里的四块机制。读者可以先在小文件里理解机制，再到最终项目里看它如何和 API、前端、会话存储接起来。
+前四个 Demo 不是孤立练习。它们分别对应教学版 Agent 后端里的四块机制。读者可以先在小文件里理解机制，再到最终项目里看它如何和 API、前端、会话存储接起来。Demo 5 是可选真模型烟测，用来验证同一套工具协议如何接到 OpenAI-compatible 接口。
 
 ## 总览
 
@@ -10,6 +10,8 @@ flowchart LR
   D2["Demo 2\n工具调用"] --> T["server/agent/tools.ts"]
   D3["Demo 3\n会话树"] --> S["server/agent/sessionStore.ts"]
   D4["Demo 4\n压缩"] --> S
+  D5["Demo 5\n真模型烟测"] --> M["OpenAI-compatible adapter"]
+  M --> L
   L --> API["server/index.ts"]
   T --> API
   S --> API
@@ -24,6 +26,7 @@ flowchart LR
 | Demo 2 | assistant 产出 `toolCall`，运行时执行工具，结果回写为 `toolResult` | `ToolRegistry` 和 `executeToolCall()` |
 | Demo 3 | session entry 用 `id`/`parentId` 形成树，`leafId` 决定上下文路径 | `JsonlSessionStore.appendMessage()` 和 `buildContext()` |
 | Demo 4 | 旧消息被摘要替代，最近消息保留原文 | `JsonlSessionStore.compactIfNeeded()` |
+| Demo 5 | 用真实模型返回 OpenAI-compatible `tool_calls`，本地执行工具后回传 `tool` message | 不进入默认项目，作为替换 `MockModel` 的 adapter 练习 |
 
 ## 从 Demo 读到最终项目
 
@@ -37,6 +40,7 @@ flowchart LR
 6. `examples/teaching-agent/src/server/agent/sessionStore.ts`
 7. `examples/demos/04-compaction.ts`
 8. `examples/teaching-agent/src/server/index.ts`
+9. 可选：`examples/demos/05-openai-compatible.ts`
 
 这样读的好处是：每次只迁移一个概念。先把机制看懂，再看它如何被 Express API 串起来。
 
@@ -51,6 +55,7 @@ Demo 故意很小，所以最终项目额外补了这些 glue code：
 | 安全工作区 | 工具只能读写 `workspace/`，避免路径越界 |
 | 共享协议类型 | 前后端都使用同一套 `AgentMessage`、`AgentEvent`、`ToolDefinition` |
 | MockModel 策略 | 不依赖 API Key，也能稳定复现工具调用链路 |
+| 可选真模型烟测 | 验证真实 provider 接入，但不影响默认可复现性 |
 
 ## 小练习
 

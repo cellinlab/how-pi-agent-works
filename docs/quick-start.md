@@ -24,7 +24,7 @@ npm run docs:dev
 
 默认会启动 VitePress。终端会打印本地地址，通常是 `http://localhost:5173/`。
 
-## 运行四个小 Demo
+## 运行渐进式 Demo
 
 ```bash
 npm run demo:01
@@ -33,7 +33,18 @@ npm run demo:03
 npm run demo:04
 ```
 
-这四个 Demo 不依赖真实大模型。它们使用一个确定性的“假模型”来模拟模型输出，目的是让你把核心控制流看清楚。
+前四个 Demo 不依赖真实大模型。它们使用一个确定性的“假模型”来模拟模型输出，目的是让你把核心控制流看清楚。
+
+如果你有 OpenAI-compatible 测试模型，可以额外运行可选 Demo：
+
+```bash
+OPENAI_COMPATIBLE_BASE_URL="https://example.com/v1" \
+OPENAI_COMPATIBLE_API_KEY="你的 key" \
+OPENAI_COMPATIBLE_MODEL="模型名" \
+npm run demo:05
+```
+
+Demo 5 只从环境变量读取 key，不需要也不应该把 key 写进仓库。
 
 ## 启动最终教学项目
 
@@ -57,6 +68,7 @@ npm run teaching-agent:dev
 4. 读 [会话、树与分支](/concepts/sessions)，再跑 `npm run demo:03`。
 5. 读 [上下文、技能与压缩](/concepts/context)，再跑 `npm run demo:04`。
 6. 最后进入 [教学版目标项目](/project/overview)，把所有机制组合起来。
+7. 如果你有真实模型接口，再读 [可选：接入 OpenAI-compatible 模型](/project/build-08-real-model)。
 
 ## 目录总览
 
@@ -69,7 +81,7 @@ how-pi-agent-works/
 │  ├─ project/                   # 最终项目教程
 │  └─ reference/                 # 常见错误与资料来源
 ├─ examples/
-│  ├─ demos/                     # 四个可运行小 Demo
+│  ├─ demos/                     # 四个核心 Demo + 一个可选真模型烟测
 │  └─ teaching-agent/            # React + Node 教学版 Agent
 └─ public/                       # README 原有二维码资源
 ```

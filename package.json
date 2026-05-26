@@ -14,6 +14,7 @@
     "demo:02": "tsx examples/demos/02-tools.ts",
     "demo:03": "tsx examples/demos/03-session-tree.ts",
     "demo:04": "tsx examples/demos/04-compaction.ts",
+    "demo:05": "tsx examples/demos/05-openai-compatible.ts",
     "teaching-agent:dev": "npm --workspace @how-pi-agent-works/teaching-agent run dev",
     "teaching-agent:build": "npm --workspace @how-pi-agent-works/teaching-agent run build",
     "teaching-agent:typecheck": "npm --workspace @how-pi-agent-works/teaching-agent run typecheck"

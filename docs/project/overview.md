@@ -16,7 +16,7 @@
 | JSONL 会话 | 是 | 后端追加写 `.teaching-agent/session.jsonl` |
 | 会话树 | 最小实现 | 保存 `id` / `parentId` / `leafId` |
 | 上下文压缩 | 简化实现 | 超过阈值时插入 summary message |
-| 真实模型 API | 未内置 | 用 `MockModel`，留替换点 |
+| 真实模型 API | 可选 Demo | 默认用 `MockModel`，`npm run demo:05` 展示 OpenAI-compatible 接入 |
 
 ## 架构
 
@@ -81,6 +81,8 @@ sequenceDiagram
 教学项目不直接接真实模型，是为了让每个读者都能在没有 API Key 的情况下跑通。
 
 `MockModel` 的另一个好处是可预测：你知道它什么时候会调用工具，什么时候会停止。等你理解 Agent Loop 后，再把它替换成 OpenAI/Anthropic/Vercel AI SDK 都不难。
+
+如果你已经有 OpenAI-compatible 测试接口，可以先看 [可选：接入 OpenAI-compatible 模型](/project/build-08-real-model)。这条路径不会改变默认教学项目，只用于验证真实模型如何接入同一套工具协议。
 
 ## 目录
 

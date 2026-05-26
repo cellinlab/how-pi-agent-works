@@ -6,7 +6,7 @@
 
 - 核心概念：Agent Loop、消息、流式事件、工具调用、会话树、上下文压缩。
 - Pi 源码拆解：`pi-ai`、`pi-agent-core`、`pi-coding-agent` 的分层和关键链路。
-- 渐进式 Demo：四个 TypeScript 小 Demo 从最小循环逐步加工具、会话和压缩。
+- 渐进式 Demo：四个核心 TypeScript 小 Demo 从最小循环逐步加工具、会话和压缩，另有一个可选真模型烟测 Demo。
 - 最终项目：React + Node.js + TypeScript 实现一个可运行的教学版 Agent。
 
 ## 运行教程站点
@@ -31,6 +31,17 @@ npm run demo:03
 npm run demo:04
 ```
 
+可选真实模型烟测：
+
+```bash
+OPENAI_COMPATIBLE_BASE_URL="https://example.com/v1" \
+OPENAI_COMPATIBLE_API_KEY="你的 key" \
+OPENAI_COMPATIBLE_MODEL="mimo-v2.5-pro" \
+npm run demo:05
+```
+
+请只通过环境变量传入 API Key，不要把密钥写进仓库。
+
 ## 运行教学版 Agent
 
 ```bash
@@ -53,7 +64,7 @@ npm run teaching-agent:build
 
 ```text
 docs/                         # VitePress 教程站点
-examples/demos/                # 四个渐进式 Demo
+examples/demos/                # 四个核心渐进式 Demo + 可选真模型烟测
 examples/teaching-agent/       # React + Node 教学版目标项目
 specs/                         # 项目计划与工作日志
 ```

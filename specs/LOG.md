@@ -260,3 +260,26 @@
 - 更新 `docs/reference/sources.md`：
   - 补充 Prompt Templates、provider、runtime、extensions、compaction 相关源码来源。
 - 更新 VitePress sidebar，将新增源码页面纳入第二部分。
+
+### 16. 从零实现最终项目教程
+
+- 新增最终项目分步教程：
+  - `docs/project/build-00-roadmap.md`：从空目录到可运行 Agent 的实现路线。
+  - `docs/project/build-01-protocol.md`：共享消息、工具、事件、SessionEntry 协议。
+  - `docs/project/build-02-loop-model.md`：`runAgentLoop` 与 `MockModel`。
+  - `docs/project/build-03-tools.md`：`ToolRegistry`、安全工作区和工具结果回写。
+  - `docs/project/build-04-session-store.md`：JSONL append、leaf、上下文构建和简化 compaction。
+  - `docs/project/build-05-api.md`：Express API 的 prompt orchestration。
+  - `docs/project/build-06-frontend.md`：React 消息、工具列表、事件时间线。
+  - `docs/project/build-07-debug.md`：类型检查、API、浏览器和临时产物清理清单。
+  - `docs/project/build-08-real-model.md`：可选 OpenAI-compatible 真模型接入。
+- 新增 `docs/demos/05-real-model.md` 和 `examples/demos/05-openai-compatible.ts`：
+  - 只通过环境变量读取 base URL、API Key、模型名和鉴权 header。
+  - 缺少环境变量时打印用法并跳过，避免普通 Demo 验证失败。
+  - 配置真实模型时，会发送 `list_files` 工具定义、执行本地工具、再回传 `tool` message 获取最终回答。
+- 更新 `README.md`、`docs/quick-start.md`、`docs/index.md`、`docs/project/code-map.md`、`docs/project/overview.md`、`docs/project/run.md`、`docs/project/extend.md` 和资料来源页面。
+- 使用临时 OpenAI-compatible endpoint 验证 Demo 5：
+  - 模型：`mimo-v2.5-pro`。
+  - 鉴权：`api-key` header。
+  - 结果：模型返回 `list_files` 工具调用，本地工具列出 `README.md` 和 `agent-notes.md`，第二轮模型给出中文总结。
+  - 密钥未写入仓库、文档或日志。

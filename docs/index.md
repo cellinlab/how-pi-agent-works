@@ -18,7 +18,7 @@ features:
   - title: 不是源码翻译
     details: 先建立最小心智模型，再逐层拆解 Pi 的实现。每一节都回答“为什么需要这一层”。
   - title: 渐进式 Demo
-    details: 四个小 Demo 分别覆盖循环、工具、会话树、压缩。读者可以直接运行、改动、观察输出。
+    details: 四个核心小 Demo 分别覆盖循环、工具、会话树、压缩，另有一个可选真模型烟测。读者可以直接运行、改动、观察输出。
   - title: 可运行目标项目
     details: 最后实现一个 React + Node + TypeScript 的教学版 Agent，保留 Pi 的核心设计味道。
 ---

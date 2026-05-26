@@ -76,7 +76,8 @@ export default defineConfig({
           { text: "Demo 1：最小 Agent 循环", link: "/demos/01-loop" },
           { text: "Demo 2：工具定义与执行", link: "/demos/02-tools" },
           { text: "Demo 3：JSONL 会话树", link: "/demos/03-session-tree" },
-          { text: "Demo 4：上下文压缩", link: "/demos/04-compaction" }
+          { text: "Demo 4：上下文压缩", link: "/demos/04-compaction" },
+          { text: "Demo 5：真模型烟测", link: "/demos/05-real-model" }
         ]
       },
       {
@@ -85,6 +86,15 @@ export default defineConfig({
         items: [
           { text: "项目总览", link: "/project/overview" },
           { text: "Demo 到项目的映射", link: "/project/code-map" },
+          { text: "从零实现路线", link: "/project/build-00-roadmap" },
+          { text: "Step 1：共享协议", link: "/project/build-01-protocol" },
+          { text: "Step 2：Loop 与 MockModel", link: "/project/build-02-loop-model" },
+          { text: "Step 3：工具系统", link: "/project/build-03-tools" },
+          { text: "Step 4：JSONL 会话", link: "/project/build-04-session-store" },
+          { text: "Step 5：Express API", link: "/project/build-05-api" },
+          { text: "Step 6：React 前端", link: "/project/build-06-frontend" },
+          { text: "Step 7：调试与验收", link: "/project/build-07-debug" },
+          { text: "可选：真实模型 Demo", link: "/project/build-08-real-model" },
           { text: "后端实现", link: "/project/backend" },
           { text: "前端实现", link: "/project/frontend" },
           { text: "运行与调试", link: "/project/run" },

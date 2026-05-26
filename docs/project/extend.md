@@ -13,6 +13,8 @@
 | 错误怎么表达 | 不要直接 throw，尽量转成 `AssistantMessage.stopReason = "error"` |
 | token 用量怎么记录 | 保存到 assistant message，方便压缩判断 |
 
+可以先跑 [Demo 5：OpenAI-compatible 真模型烟测](/demos/05-real-model)，确认真实 provider 能返回 tool call，再考虑把 adapter 接进教学版后端。
+
 ## 做真正的流式 UI
 
 当前前端是请求结束后一次性展示。下一步可以改成：

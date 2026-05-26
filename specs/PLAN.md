@@ -95,7 +95,7 @@ Pi 的真实系统可以按三层理解：
 | 调研 Pi 官方文档与源码 | 已完成 | 明确三层架构、Agent Loop、工具、会话、压缩、扩展 |
 | 设计教程结构 | 已完成 | VitePress sidebar/nav 与章节路线确定 |
 | 创建教程站点 | 已完成 | VitePress 配置、主题、Mermaid、内容页面齐备 |
-| 实现四个小 Demo | 已完成 | `npm run demo:01` 到 `demo:04` 都能运行 |
+| 实现渐进式 Demo | 已完成 | `npm run demo:01` 到 `demo:04` 都能运行，`demo:05` 作为可选真实模型烟测 |
 | 实现教学版目标项目 | 已完成 | React 前端 + Node API 可本地启动并完成核心 prompt |
 | 验证构建与运行 | 已完成 | `npm run docs:build`、Demo、教学项目 typecheck/build 通过 |
 | 更新 README | 已完成 | README 指向教程站点、运行方式、联系方式 |
@@ -116,7 +116,7 @@ Pi 的真实系统可以按三层理解：
 
 暂不实现：
 
-- 真实模型供应商接入。
+- 教学版目标项目默认接入真实模型供应商。
 - 完整 OAuth/API Key 管理。
 - 完整 Pi 扩展系统。
 - 复杂 TUI。
@@ -149,7 +149,7 @@ Pi 的真实系统可以按三层理解：
 - 新增会话格式、分支、压缩和 branch summary 的实现链路讲解。
 - 补齐“读源码时应该抓住哪些不变量”的小结，让读者能从官方文档映射到源码。
 
-### Commit 7：从零实现最终项目教程（待开始）
+### Commit 7：从零实现最终项目教程（已完成）
 
 - 新增从空目录开始搭建教学版 Agent 的分步教程。
 - 逐步覆盖共享协议、后端 Agent Loop、工具系统、JSONL 会话、React 前端、调试方法。
@@ -160,6 +160,7 @@ Pi 的真实系统可以按三层理解：
 
 - 运行 `npm run docs:build`。
 - 运行 `npm run demo:01` 到 `npm run demo:04`。
+- 如果有临时 API Key，运行 `npm run demo:05` 验证 OpenAI-compatible 工具调用链路；密钥不得写入仓库。
 - 运行 `npm run teaching-agent:typecheck` 和 `npm run teaching-agent:build`。
 - 启动教学版 Agent，验证 API 与浏览器桌面/移动视口。
 - 清理临时产物，更新 `specs/LOG.md`，最终确认 `git status --short` 为空。

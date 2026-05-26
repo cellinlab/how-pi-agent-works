@@ -14,6 +14,8 @@
 | [Extensions](https://pi.dev/docs/latest/extensions) | 扩展、工具注册、事件 hook、命令、UI 能力 |
 | [Skills](https://pi.dev/docs/latest/skills) | 技能发现、按需加载、`SKILL.md` 结构 |
 | [Prompt Templates](https://pi.dev/docs/latest/prompt-templates) | 区分 prompt template、skill、context file 的职责 |
+| [Xiaomi MiMo First API Call](https://platform.xiaomimimo.com/docs/zh-CN/quick-start/first-api-call) | 可选真实模型 Demo 的 OpenAI-compatible 调用方式 |
+| [Xiaomi MiMo Model and Rate Limit](https://platform.xiaomimimo.com/docs/zh-CN/quick-start/model) | 可选真实模型 Demo 的模型名、函数调用和上下文窗口信息 |
 
 ## GitHub 源码
 
@@ -40,7 +42,7 @@
 
 | 目录 | 说明 |
 | --- | --- |
-| `examples/demos/` | 四个渐进式小 Demo |
+| `examples/demos/` | 四个核心渐进式小 Demo + 一个可选真模型烟测 Demo |
 | `examples/teaching-agent/` | React + Node 教学版目标项目 |
 
 ## 阅读建议
@@ -56,6 +58,7 @@
 | Extensions 文档覆盖工具、命令、事件和 UI 扩展 | 用来解释 before/after tool hook 与扩展点 |
 | Session Format 文档说明 JSONL session file、entry 类型和树结构 | 用来讲 `id` / `parentId` / `leafId` 与 compaction entry |
 | Compaction 文档说明 auto-compaction 与 branch summarization 的触发和结构 | 用来补齐会话格式与压缩链路章节 |
+| Xiaomi MiMo 文档说明 OpenAI-compatible `/chat/completions`、`api-key` header 和 `mimo-v2.5-pro` | 用来新增可选 Demo 5，但不把真实 key 写入仓库 |
 
 ## 最近核对记录
 

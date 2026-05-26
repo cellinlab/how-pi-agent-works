@@ -43,6 +43,19 @@ curl -X POST http://localhost:4317/api/prompt \
   -d '{"text":"列出工作区文件"}'
 ```
 
+## 可选真模型烟测
+
+默认教学项目不依赖真实模型。如果你已经有 OpenAI-compatible endpoint，可以单独跑：
+
+```bash
+OPENAI_COMPATIBLE_BASE_URL="https://example.com/v1" \
+OPENAI_COMPATIBLE_API_KEY="你的 key" \
+OPENAI_COMPATIBLE_MODEL="mimo-v2.5-pro" \
+npm run demo:05
+```
+
+更完整说明见 [可选：接入 OpenAI-compatible 模型](/project/build-08-real-model)。
+
 ## 调试会话文件
 
 运行后会生成：
