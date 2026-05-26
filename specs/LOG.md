@@ -335,3 +335,28 @@
   - 启动 VitePress dev server，用 Playwright 逐页检查 37 个文档页面。
   - 共发现 42 个 Mermaid block，全部渲染为 SVG，`.mermaid-error` 为 0。
   - 额外补充 VitePress favicon 配置，避免浏览器控制台出现 `/favicon.ico` 404 噪音。
+
+### 19. 本科生试读反馈计划登记
+
+- 用户提供一位本科生读者的试读反馈，整体结论是：
+  - 当前主线扎实，概念、Demo、源码拆解、最终项目已经连起来。
+  - 但“从零到一复现教学版 Agent”的工程跟做材料还不够手把手。
+- 已将反馈拆成后续阶段计划并写入 `specs/PLAN.md`：
+  - Commit 9：反馈登记与计划拆分。
+  - Commit 10：修正误导性图表与命名不一致。
+  - Commit 11：把“从零实现”改成可跟做工程手册。
+  - Commit 12：补 provider adapter 与真实模型教学链路。
+  - Commit 13：补真实 Pi 压缩复杂边界进阶页。
+  - Commit 14：补测试章节与最小测试套件。
+  - Commit 15：补工具权限、SSE 流式 UI、会话树 UI、失败模式等进阶工程草图。
+  - Commit 16：二轮最终验证与读者路径检查。
+- 重新核对的外部参考：
+  - `https://pi.dev/docs/latest/sdk`
+  - `https://pi.dev/docs/latest/compaction`
+  - `https://pi.dev/docs/latest/extensions`
+  - `https://pi.dev/news/2026/5/7/pi-has-a-new-home`
+- 本轮只登记计划，不开始正文实现。
+- 范围说明：
+  - 教学版项目默认仍使用 `MockModel`。
+  - 真实模型保持为可选 Demo 与 adapter 教学链路。
+  - 不把 OAuth、完整扩展系统、生产级权限审批 UI 纳入必须实现范围。

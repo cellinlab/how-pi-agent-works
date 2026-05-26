@@ -116,7 +116,7 @@ Pi 的真实系统可以按三层理解：
 
 暂不实现：
 
-- 教学版目标项目默认接入真实模型供应商。
+- 将教学版目标项目默认接入真实模型供应商；真实模型接入先保留为可选 Demo 和 adapter 教学章节。
 - 完整 OAuth/API Key 管理。
 - 完整 Pi 扩展系统。
 - 复杂 TUI。
@@ -164,6 +164,155 @@ Pi 的真实系统可以按三层理解：
 - 运行 `npm run teaching-agent:typecheck` 和 `npm run teaching-agent:build`。
 - 启动教学版 Agent，验证 API 与浏览器桌面/移动视口。
 - 清理临时产物，更新 `specs/LOG.md`，最终确认 `git status --short` 为空。
+
+## 本科生试读反馈完善计划
+
+本轮基于本科生读者反馈继续打磨。目标不是扩大成生产级 Pi 复刻，而是让“从零到一复现一个教学版 Agent”的工程跟做体验更强，并补齐真实 Pi 复杂边界的解释。
+
+### 总原则
+
+1. 先修正会误导读者的内容，再补手把手工程材料。
+2. 不破坏现有课程主线：概念 -> 源码 -> Demo -> 教学版项目。
+3. 每个阶段先更新 `specs/PLAN.md` 状态，完成后追加 `specs/LOG.md`。
+4. 每个阶段单独 commit。
+5. 默认教学项目继续用 `MockModel`，真实模型作为 adapter/可选 Demo 展示。
+
+### Commit 9：反馈登记与计划拆分（已完成）
+
+- 记录本科生试读反馈。
+- 明确后续阶段、优先级和验收标准。
+- 修正 `PLAN.md` 中“真实模型默认接入”的范围描述，避免歧义。
+
+### Commit 10：修正误导性图表与命名不一致（待开始）
+
+- 修正 `docs/project/overview.md` 中“一次请求的后端流程”：
+  - 当前图误写为 `AgentLoop -> Store`。
+  - 改为 `AgentLoop -->> API: newMessages + events`，再由 `API -> Store: append newMessages`。
+- 修正 `docs/project/backend.md` 的 `RunResult` 命名：
+  - 文档中写 `messages`。
+  - 实际代码返回 `newMessages`。
+- 在 `docs/concepts/sessions.md` 增加提示框：
+  - 真实 Pi session format 示例可以是 `version: 3`。
+  - 教学版协议为了简化使用 `version: 1`。
+  - 解释两者差异不影响 `id` / `parentId` / `leafId` 主线。
+- 修正 VitePress `editLink.pattern`：
+  - 不再指向 `earendil-works/pi`。
+  - 方案优先级：如果本教程有远程仓库 URL，则指向本教程仓库；否则关闭 edit link。
+- 验收：
+  - `npm run docs:build` 通过。
+  - Mermaid 专项检查通过。
+  - 相关页面不再与真实代码链路冲突。
+
+### Commit 11：把“从零实现”改成可跟做工程手册（待开始）
+
+- 为 `docs/project/build-00-roadmap.md` 补“从空目录开始”的完整脚手架步骤：
+  - 初始化 npm workspace。
+  - 安装依赖。
+  - 创建目录树。
+  - 配置 TypeScript、Vite、Express、proxy。
+- 为 Step 1 到 Step 7 每页统一补齐：
+  - 本节新增/修改文件清单。
+  - 可复制的完整代码或局部 diff。
+  - 运行命令。
+  - 预期输出。
+  - 常见报错与排查。
+  - 本节完成后的 git checkpoint 建议。
+- 新增“跟做版本 vs 完整仓库版本”的说明，避免读者误以为只能复制现成代码。
+- 验收：
+  - 每个 Step 页面都能回答“我要新建哪些文件、写什么代码、跑什么命令、看到什么结果”。
+  - `npm run docs:build` 通过。
+
+### Commit 12：补 provider adapter 与真实模型教学链路（待开始）
+
+- 新增或扩展真实模型 adapter 章节，重点不是 smoke test，而是协议转换：
+  - OpenAI-compatible `tool_calls` -> 教学版 `AssistantMessage.content[]`。
+  - `tool` message -> 教学版 `ToolResultMessage`。
+  - `finish_reason` / provider error -> `stopReason` 和 `errorMessage`。
+  - 流式 `delta` 如何拼成 text block / tool call block。
+  - abort 时模型请求、工具执行和事件如何收尾。
+- 将 Demo 5 从“烟测”扩展成“adapter 阅读与改造练习”：
+  - 保持默认无 key 可跳过。
+  - 增加 adapter 伪代码和边界表。
+- 对照 Pi 官方 SDK 的 `AgentSession` 生命周期、事件订阅和模型状态管理，说明教学版简化在哪里。
+- 验收：
+  - `npm run demo:05` 无环境变量时仍可跳过。
+  - 有环境变量时继续能触发工具调用链路。
+  - 不提交任何 API Key。
+
+### Commit 13：补真实 Pi 压缩复杂边界进阶页（待开始）
+
+- 新增“进阶：真实 Pi 为什么压缩更复杂”页面，或扩展 `docs/source/session-compaction.md`。
+- 覆盖：
+  - `reserveTokens`。
+  - `keepRecentTokens`。
+  - `firstKeptEntryId`。
+  - turn boundary。
+  - split turn。
+  - 重复压缩。
+  - branch summary 与普通 compaction 的区别。
+  - 工具输出和文件操作追踪为什么会影响摘要质量。
+- 明确“教学版为什么不实现这些复杂边界”，保持本科生学习曲线。
+- 验收：
+  - 页面中至少包含一张流程图、一张对比表和一个小练习。
+  - `npm run docs:build` 通过。
+
+### Commit 14：补测试章节与最小测试套件（待开始）
+
+- 新增 `docs/project/testing.md`。
+- 讲解 Agent 项目的测试分层：
+  - loop 单元测试。
+  - tool registry 测试。
+  - session store 测试。
+  - API 集成测试。
+  - 前端 smoke test。
+- 增加最小测试命令和示例用例，优先覆盖：
+  - loop 遇到 tool call 会继续下一轮。
+  - 工具不存在会变成 `isError` toolResult。
+  - session 能从 leaf 重建上下文。
+  - 路径越界会被拦截。
+  - 最大轮次能阻止无限 tool call。
+- 若引入测试框架，优先选轻量方案并保持脚本简单。
+- 验收：
+  - 新增 `npm run teaching-agent:test` 或等价测试脚本。
+  - 测试命令通过。
+  - 文档解释测试为什么能保护 Agent 工程边界。
+
+### Commit 15：补三个进阶扩展方向的工程草图（待开始）
+
+- 扩展 `docs/project/extend.md`，把读者更感兴趣的方向变成工程草图：
+  - 工具权限模型：`beforeToolCall` / `tool_call` 的确认、拦截、参数改写。
+  - 真正流式 UI：SSE 推送 `message_update`、`tool_execution_start/end` 到 React。
+  - 会话树 UI：用 `id` / `parentId` / `leafId` 做可点击分支视图。
+- 增加 Agent 失败模式专项表：
+  - 无限 tool call。
+  - 工具输出过长。
+  - 模型不调用工具。
+  - 工具参数 JSON 错误。
+  - provider 超时/断流。
+- 验收：
+  - 每个方向包含最小接口设计、关键状态、实现步骤和风险提示。
+  - `npm run docs:build` 通过。
+
+### Commit 16：二轮最终验证与读者路径检查（待开始）
+
+- 运行：
+  - `npm run docs:build`
+  - `npm run demo:01`
+  - `npm run demo:02`
+  - `npm run demo:03`
+  - `npm run demo:04`
+  - `npm run demo:05`
+  - `npm run teaching-agent:typecheck`
+  - `npm run teaching-agent:build`
+  - 新增测试命令。
+- 启动教学版 Agent 做 API 和浏览器验证。
+- 做一次“本科生跟做路径”人工检查：
+  - 从 quick-start 进入。
+  - 跑 Demo。
+  - 按 Step 页面从空目录理解实现顺序。
+  - 确认最终项目能运行。
+- 清理临时产物。
+- 更新 `specs/LOG.md`。
 
 ## 内容补强收口计划
 
