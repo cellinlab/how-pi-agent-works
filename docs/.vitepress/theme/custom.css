@@ -1,0 +1,52 @@
+:root {
+  --vp-c-brand-1: #0f766e;
+  --vp-c-brand-2: #0d9488;
+  --vp-c-brand-3: #14b8a6;
+  --vp-c-brand-soft: rgba(20, 184, 166, 0.16);
+  --vp-font-family-base: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #0f766e, #2563eb 45%, #b45309);
+  --vp-home-hero-image-background-image: linear-gradient(135deg, rgba(15, 118, 110, 0.18), rgba(37, 99, 235, 0.14));
+  --vp-home-hero-image-filter: blur(42px);
+}
+
+.VPHomeHero .image-src {
+  max-width: 300px;
+}
+
+.vp-doc h2 {
+  margin-top: 36px;
+}
+
+.vp-doc table {
+  display: table;
+  width: 100%;
+}
+
+.mermaid-block {
+  margin: 20px 0;
+  overflow: auto;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  padding: 18px;
+  background: var(--vp-c-bg-soft);
+}
+
+.mermaid-block svg {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.mermaid-source,
+.mermaid-error {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.lesson-card {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--vp-c-bg-soft);
+}

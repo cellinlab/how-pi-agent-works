@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Pi Agent">
+  <rect width="96" height="96" rx="20" fill="#0f172a"/>
+  <path d="M24 28h48v10H55v30h17v10H24V68h17V38H24V28Z" fill="#14b8a6"/>
+  <circle cx="48" cy="18" r="7" fill="#f59e0b"/>
+</svg>
