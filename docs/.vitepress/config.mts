@@ -67,7 +67,8 @@ export default defineConfig({
           { text: "Agent Loop 主循环", link: "/source/agent-loop" },
           { text: "工具、扩展与资源加载", link: "/source/tools-extensions" },
           { text: "AgentSession 运行层", link: "/source/agent-session" },
-          { text: "会话格式与压缩链路", link: "/source/session-compaction" }
+          { text: "会话格式与压缩链路", link: "/source/session-compaction" },
+          { text: "进阶压缩边界", link: "/source/advanced-compaction" }
         ]
       },
       {

@@ -147,7 +147,8 @@ flowchart TB
 
 教学版的目标是让读者先掌握结构，不让真实压缩 prompt、token 估算和分支 UI 把主线冲散。
 
+如果你已经理解这条主线，下一页 [进阶：真实 Pi 为什么压缩更复杂](/source/advanced-compaction) 会继续拆 `reserveTokens`、`keepRecentTokens`、turn boundary、split turn、重复压缩和文件操作追踪这些真实边界。
+
 ## 小练习
 
 在 `examples/teaching-agent/src/server/agent/sessionStore.ts` 里给 compaction entry 加一个 `tokensBefore` 字段，并在前端时间线里展示它。这个练习能把“压缩是运行时事件”这件事变得很直观。
-

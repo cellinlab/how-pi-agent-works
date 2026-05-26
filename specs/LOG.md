@@ -419,3 +419,20 @@
   - `npm run demo:05` 无环境变量路径成功跳过。
   - `npm run teaching-agent:typecheck` 成功。
   - `npm run docs:build` 成功。
+
+### 23. 真实 Pi 压缩复杂边界进阶页
+
+- 新增 `docs/source/advanced-compaction.md`：
+  - 解释真实 Pi 为什么不能只做“摘要旧消息 + 保留最近消息”。
+  - 覆盖 `reserveTokens`、`keepRecentTokens`、`firstKeptEntryId`、turn boundary、split turn、重复压缩、branch summary 和文件操作追踪。
+  - 增加流程图、工具调用切分图、split turn 图、真实 Pi vs 教学版对照表和轻量真实化练习。
+- 更新 VitePress sidebar、源码阅读地图和基础压缩页：
+  - 将进阶页挂入“第二部分：源码拆解”。
+  - 在 `docs/source/session-compaction.md` 末尾引导读者继续阅读进阶边界。
+- 事实核对：
+  - Pi 官方 Compaction 文档确认自动压缩触发公式、默认 `reserveTokens: 16384`、默认 `keepRecentTokens: 20000`、split turn、cut point 规则、branch summarization 和文件操作累计追踪。
+  - Pi 官方 Session Format 文档确认 `CompactionEntry` 的 `summary`、`firstKeptEntryId`、`tokensBefore`、`details` 字段，以及 `BranchSummaryEntry` 的语义。
+  - 对照 `packages/coding-agent/src/core/compaction/compaction.ts`、`branch-summarization.ts`、`utils.ts`、`session-manager.ts`，确认文档没有把教学版简化误写成真实 Pi 行为。
+- 验证：
+  - `npm run docs:build` 成功。
+  - `git diff --check` 成功。

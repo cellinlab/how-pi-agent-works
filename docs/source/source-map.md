@@ -28,6 +28,7 @@ flowchart TB
 | 3 | [工具、扩展与资源加载](/source/tools-extensions) | 工具能力、扩展插槽和启动资源如何装配 |
 | 4 | [AgentSession 运行层](/source/agent-session) | `prompt()` preflight、持久化、runtime 重建 |
 | 5 | [会话格式与压缩链路](/source/session-compaction) | JSONL 树、compaction、branch summary 如何工作 |
+| 6 | [进阶压缩边界](/source/advanced-compaction) | `reserveTokens`、turn boundary、split turn 和重复压缩为什么必要 |
 
 ## 三个包的边界
 
