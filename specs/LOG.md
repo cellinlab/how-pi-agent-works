@@ -482,3 +482,38 @@
 - 验证：
   - `npm run docs:build` 成功。
   - `git diff --check` 成功。
+
+### 26. 二轮最终验证与读者路径检查
+
+- 文档与 Demo：
+  - `npm run docs:build` 成功。
+  - `npm run demo:01` 成功。
+  - `npm run demo:02` 成功。
+  - `npm run demo:03` 成功。
+  - `npm run demo:04` 成功。
+  - `npm run demo:05` 在未配置环境变量时按预期跳过，退出成功。
+- 教学版 Agent：
+  - `npm run teaching-agent:test` 成功，7 个测试通过。
+  - `npm run teaching-agent:typecheck` 成功。
+  - `npm run teaching-agent:build` 成功。
+  - 启动 `npm run teaching-agent:dev` 成功，API 监听 `http://localhost:4317`，前端监听 `http://localhost:5174`。
+- API 验证：
+  - `GET /api/session` 返回 `teaching-session`、工具列表和 session header。
+  - `POST /api/reset` 成功重置会话。
+  - `POST /api/prompt` 输入“列出工作区文件”，返回 user、assistant toolCall、toolResult、assistant final，JSONL entries 正常追加。
+- 浏览器验证：
+  - 使用 Playwright CLI 打开 `http://localhost:5174/`。
+  - 桌面视口可见聊天区、工具调用、工具列表和 Event Timeline。
+  - 输入“读取 agent-notes.md”并提交，页面展示 `read_file` tool call、`tool:read_file` 工具结果和最终 assistant 回答。
+  - 切换到 390px 宽度后页面无横向溢出，`documentElement.scrollWidth === clientWidth`。
+  - 浏览器 console error 为 0。
+- 读者路径抽查：
+  - `docs/index.md` 能跳转到学习路线、核心概念、最终项目、联系赞助。
+  - `docs/project/build-00-roadmap.md` 保留从空目录开始的跟做入口。
+  - `docs/project/testing.md`、`docs/source/advanced-compaction.md`、`docs/project/extend.md` 已纳入 sidebar 和相关页面跳转。
+  - `docs/reference/sources.md` 保留官方来源和最近核对记录。
+- 清理：
+  - 已关闭 Playwright browser。
+  - 已停止教学版 dev server。
+  - 已删除 `docs/.vitepress/dist/`、`docs/.vitepress/cache/`、`examples/teaching-agent/dist/`、`examples/teaching-agent/.teaching-agent/`、`.playwright-cli/`、`output/`。
+  - 使用 `rg` 确认仓库中没有临时 API Key 或 `token-plan-cn.xiaomimimo.com` endpoint。
