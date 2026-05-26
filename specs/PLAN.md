@@ -22,6 +22,7 @@
 | `https://pi.dev/docs/latest/session-format` | JSONL 会话格式、entry 类型、树结构 |
 | `https://pi.dev/docs/latest/compaction` | 上下文压缩与分支摘要 |
 | `https://pi.dev/docs/latest/extensions` | 扩展、工具注册、事件 hook、命令和 UI |
+| `https://pi.dev/docs/latest/rpc` | RPC Mode、事件流和外部 UI 集成 |
 | `https://pi.dev/docs/latest/skills` | 技能发现、按需加载、`SKILL.md` |
 
 ## Pi 核心理解摘要
@@ -64,8 +65,13 @@ Pi 的真实系统可以按三层理解：
 
 ### 第二部分：源码拆解
 
+- `docs/source/source-map.md`：源码阅读地图。
+- `docs/source/model-protocol.md`：`pi-ai` 模型协议与 provider adapter。
 - `docs/source/agent-loop.md`：`runAgentLoop` 主链路。
+- `docs/source/tools-extensions.md`：工具、扩展与资源加载。
 - `docs/source/agent-session.md`：`AgentSession` 运行层职责。
+- `docs/source/session-compaction.md`：会话格式、分支与压缩链路。
+- `docs/source/advanced-compaction.md`：真实 Pi 压缩复杂边界。
 
 ### 第三部分：渐进式 Demo
 
@@ -73,10 +79,14 @@ Pi 的真实系统可以按三层理解：
 - `docs/demos/02-tools.md` + `examples/demos/02-tools.ts`。
 - `docs/demos/03-session-tree.md` + `examples/demos/03-session-tree.ts`。
 - `docs/demos/04-compaction.md` + `examples/demos/04-compaction.ts`。
+- `docs/demos/05-real-model.md` + `examples/demos/05-openai-compatible.ts`。
 
 ### 第四部分：教学版目标项目
 
 - `docs/project/overview.md`：目标项目架构。
+- `docs/project/code-map.md`：Demo 到项目的映射。
+- `docs/project/build-00-roadmap.md` 到 `docs/project/build-08-real-model.md`：从空目录到可选真模型 adapter 的分步教程。
+- `docs/project/testing.md`：测试分层与最小测试套件。
 - `docs/project/backend.md`：后端实现讲解。
 - `docs/project/frontend.md`：前端实现讲解。
 - `docs/project/run.md`：运行与调试。
@@ -97,7 +107,7 @@ Pi 的真实系统可以按三层理解：
 | 创建教程站点 | 已完成 | VitePress 配置、主题、Mermaid、内容页面齐备 |
 | 实现渐进式 Demo | 已完成 | `npm run demo:01` 到 `demo:04` 都能运行，`demo:05` 作为可选真实模型烟测 |
 | 实现教学版目标项目 | 已完成 | React 前端 + Node API 可本地启动并完成核心 prompt |
-| 验证构建与运行 | 已完成 | `npm run docs:build`、Demo、教学项目 typecheck/build 通过 |
+| 验证构建与运行 | 已完成 | `npm run docs:build`、Demo、教学项目 test/typecheck/build 通过 |
 | 更新 README | 已完成 | README 指向教程站点、运行方式、联系方式 |
 | 内容补强收口 | 已完成 | 模块关系、源码路线、关键章节、Demo 输出、目标项目对照进一步完善 |
 
@@ -314,28 +324,47 @@ Pi 的真实系统可以按三层理解：
 - 清理临时产物。
 - 更新 `specs/LOG.md`。
 
-## 内容补强收口计划
+## 总回顾收口计划
+
+用户要求继续整体回顾，确认是否还有遗漏。检查结论：功能内容、教程主线、Demo、教学版项目、联系赞助、测试和验证均已覆盖；需要补的是入口文档与总控计划的一致性。
+
+### Commit 17：入口文档与计划一致性收口（已完成）
+
+- 更新 README，把新增测试命令加入教学版 Agent 检查命令。
+- 同步 `specs/PLAN.md` 的信息架构：
+  - 补齐新增源码页。
+  - 补齐 Demo 5。
+  - 补齐最终项目分步教程和测试章节。
+  - 标记早期“内容补强收口计划”为历史归档，避免被误读为未完成计划。
+- 验收：
+  - `npm run docs:build` 通过。
+  - `npm run teaching-agent:test` 通过。
+  - `git diff --check` 通过。
+
+## 历史计划：内容补强收口（已完成并归档）
+
+以下计划来自早期内容补强阶段，已经由后续 Commit 1-4 以及 Commit 5-16 逐步完成。保留它是为了追溯任务演进，不再作为待执行计划。
 
 本轮以现有三次提交为基线，不重写历史，不扩大教学版 Agent 的实现边界，只做教程质量、代码讲解、验证记录和分阶段提交。
 
-### Commit 1：计划登记
+### Commit 1：计划登记（已完成，历史记录）
 
 - 更新 `specs/PLAN.md`，明确内容补强收口阶段。
 - 更新 `specs/LOG.md`，记录本轮开始、约束和提交拆分规则。
 
-### Commit 2：教程正文补强
+### Commit 2：教程正文补强（已完成，历史记录）
 
 - 增加 `pi-ai`、`pi-agent-core`、`pi-coding-agent` 的模块关系图和源码阅读地图。
 - 补强 Agent Loop、工具调用、会话树、上下文压缩章节中的“为什么这样设计”和常见误区。
 - 保持 VitePress 信息架构稳定，只在确实能降低学习成本时新增页面。
 
-### Commit 3：Demo 与教学项目对照补强
+### Commit 3：Demo 与教学项目对照补强（已完成，历史记录）
 
 - 给四个 Demo 源码增加少量教学注释，解释关键转折点。
 - 让每个 Demo 文档都包含目标、运行命令、预期输出、关键代码、小练习。
 - 增加教学版 Agent 的代码对照说明，让读者知道 Demo 机制如何汇入最终项目。
 
-### Commit 4：验证与日志收口
+### Commit 4：验证与日志收口（已完成，历史记录）
 
 - 运行文档、Demo、教学版 Agent 的构建和类型检查。
 - 启动教学版 Agent，验证 API 和浏览器交互。

@@ -517,3 +517,24 @@
   - 已停止教学版 dev server。
   - 已删除 `docs/.vitepress/dist/`、`docs/.vitepress/cache/`、`examples/teaching-agent/dist/`、`examples/teaching-agent/.teaching-agent/`、`.playwright-cli/`、`output/`。
   - 使用 `rg` 确认仓库中没有临时 API Key 或 `token-plan-cn.xiaomimimo.com` endpoint。
+
+### 27. 总回顾与入口计划收口
+
+- 按用户要求做整体回顾，重点检查：
+  - `specs/PLAN.md` 是否还有未完成状态或会误导维护者的旧计划。
+  - README、Quick Start、联系赞助、Demo、最终项目、测试章节和资料来源是否互相一致。
+  - 二维码资源是否同时存在于根目录 `public/` 和 VitePress `docs/public/`。
+  - 仓库中是否包含临时 API Key 或测试 endpoint。
+- 发现并修复：
+  - README 的教学版 Agent 检查命令缺少新增的 `npm run teaching-agent:test`。
+  - Quick Start 缺少提交前推荐的 test/typecheck/build 检查命令。
+  - `specs/PLAN.md` 顶部信息架构没有同步新增源码页、Demo 5、从零实现分步教程和测试章节。
+  - `specs/PLAN.md` 末尾早期“内容补强收口计划”未标记为历史归档，容易被误读成待执行计划。
+- 事实与资源核对：
+  - `git remote -v` 确认为 `cellinlab/how-pi-agent-works`，与 VitePress edit link 一致。
+  - 根目录 `public/` 与 `docs/public/` 均包含联系与赞助二维码资源。
+  - `rg` 未发现临时 API Key 或 `token-plan-cn.xiaomimimo.com` endpoint。
+- 验证：
+  - `npm run docs:build` 成功。
+  - `npm run teaching-agent:test` 成功，7 个测试通过。
+  - `git diff --check` 成功。

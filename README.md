@@ -56,6 +56,7 @@ npm run teaching-agent:dev
 也可以单独检查：
 
 ```bash
+npm run teaching-agent:test
 npm run teaching-agent:typecheck
 npm run teaching-agent:build
 ```

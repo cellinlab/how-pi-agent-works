@@ -60,6 +60,14 @@ npm run teaching-agent:dev
 | `examples/teaching-agent/src/client` | React 前端，展示聊天、工具调用和事件时间线 |
 | `examples/teaching-agent/src/shared` | 前后端共享的消息、事件和工具类型 |
 
+提交前建议再跑一遍：
+
+```bash
+npm run teaching-agent:test
+npm run teaching-agent:typecheck
+npm run teaching-agent:build
+```
+
 ## 推荐学习顺序
 
 1. 先读 [Agent 到底是什么](/concepts/what-is-agent)，建立最小模型。
