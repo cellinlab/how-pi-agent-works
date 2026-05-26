@@ -76,6 +76,30 @@ flowchart LR
 
 这不是普通压缩，而是“跨分支携带经验”。
 
+## Session entry 不只保存消息
+
+Pi 的 session file 里不只有 `message`。它还会记录模型切换、thinking level、compaction、branch summary、自定义扩展条目和 session 名称等。这样恢复会话时，系统不只是恢复聊天文本，而是恢复“当时的运行上下文”。
+
+| entry 类型 | 为什么要保存 |
+| --- | --- |
+| `message` | 构造后续 LLM 上下文 |
+| `model_change` | 恢复时知道上一轮用的 provider/model |
+| `thinking_level_change` | 恢复 reasoning 设置 |
+| `compaction` | 长会话用摘要替代旧消息 |
+| `branch_summary` | 分支跳转后携带离开分支的经验 |
+| `custom` / `custom_message` | 扩展持久化自己的状态或注入上下文 |
+
+教学版只实现 `message` 和最小 `compaction`，但类型上保留了继续扩展的空间。
+
+## 常见误区
+
+| 误区 | 后果 | 修正 |
+| --- | --- | --- |
+| 用数组下标表示历史位置 | 删除、压缩、分支后引用会错 | 用稳定 `id` 和 `parentId` |
+| 切分支时删除旧分支 | 失去探索记录，无法回滚 | 保留旧 entry，只移动 leaf |
+| 压缩后把旧消息全删掉 | 以后无法审计和重新构建分支 | 追加 compaction entry，不破坏原始历史 |
+| 只保存 assistant 最终文本 | 工具结果和错误丢失 | 用户、助手、工具结果都作为消息保存 |
+
 ## 教学版保留什么
 
 我们的教学版会保留：

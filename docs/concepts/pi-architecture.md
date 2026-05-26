@@ -112,3 +112,39 @@ sequenceDiagram
 | TUI/RPC/print | React 页面 + Node API |
 
 这样读者能先把骨架吃透，再决定要不要补齐生产级能力。
+
+## 模块之间传递的不是“字符串”
+
+很多初学者会把 Agent 理解成“把 prompt 拼成字符串发给模型”。Pi 的设计更接近一组结构化协议在层与层之间流动：
+
+```mermaid
+flowchart LR
+  A["UserMessage"] --> B["AgentMessage[]"]
+  B --> C["convertToLlm"]
+  C --> D["Message[]"]
+  D --> E["streamSimple"]
+  E --> F["AssistantMessageEvent"]
+  F --> G["AssistantMessage"]
+  G --> H{"toolCall?"}
+  H -->|"yes"| I["AgentToolResult"]
+  I --> J["ToolResultMessage"]
+  J --> B
+  H -->|"no"| K["agent_end"]
+```
+
+这一点决定了后面的所有工程选择：
+
+| 设计选择 | 原因 |
+| --- | --- |
+| 消息是结构化对象 | 工具调用、图片、thinking、错误、token 用量都不是普通文本能可靠表达的 |
+| 事件是增量协议 | UI 需要看到流式输出和工具执行过程，而不是只等最终答案 |
+| 工具定义是 schema | 模型需要知道参数形状，运行时也要校验参数 |
+| 会话条目是 JSONL | 长会话需要 append、恢复、分支和压缩 |
+
+## 读架构时抓住两个边界
+
+第一个边界是 **LLM 边界**：进入模型前，AgentMessage 会被转换成模型供应商能接受的 Message；离开模型后，供应商事件会被统一成 Pi 的 assistant message event。
+
+第二个边界是 **副作用边界**：模型不能直接读写文件或执行命令，它只能提出 tool call。真正的副作用发生在本地工具里，并且可以被 hook、权限策略和参数校验拦住。
+
+把这两个边界抓稳，就不容易被 Pi 的 TUI、扩展、设置和 provider 兼容性绕晕。

@@ -78,6 +78,27 @@ Pi 的 `prepareToolCall` 做了四件事：
 
 Pi 有一个小但重要的规则：只有当当前批次每个工具结果都设置 `terminate: true` 时，才会提前停止工具循环。这样一个工具的“想停止”不会误杀其他并行工具的结果。
 
+## 为什么 loop 不直接写磁盘
+
+`runAgentLoop` 只接收 `context`、`config`、`emit` 和可选 `streamFn`，不直接碰 session file。这是一个很好的边界：loop 是可测试的状态转换，产品层才负责持久化。
+
+| 如果 loop 直接写磁盘 | Pi 的做法 |
+| --- | --- |
+| 测试每个边界都要准备真实文件 | 测试只断言事件和新消息 |
+| SDK、TUI、RPC 很难复用同一个核心 | 所有模式都订阅同一套 AgentEvent |
+| 扩展想替换持久化策略会很痛苦 | `AgentSession` 和 `SessionManager` 负责写入 |
+
+你在教学版项目里也会看到同样的拆法：`runAgentLoop()` 只返回 `newMessages/events`，`src/server/index.ts` 再把这些消息写入 `JsonlSessionStore`。
+
+## 常见误区
+
+| 误区 | 为什么错 | 正确做法 |
+| --- | --- | --- |
+| 工具调用后立刻给用户最终答案 | 模型还没看见工具结果 | 追加 `toolResult` 后再请求模型 |
+| provider 抛错就让进程崩溃 | UI 和 session 无法得到正常事件序列 | 转成 `stopReason: "error"` 的 assistant message |
+| 并行工具按完成顺序写回 | 模型看到的 toolResult 顺序可能和 toolCall 顺序不一致 | 执行可并行，写回按 assistant 原始顺序 |
+| abort 只停模型请求 | 工具可能仍在执行副作用 | 把 `AbortSignal` 传给工具和 hook |
+
 ## 源码阅读路线
 
 建议按这个顺序读 Pi 源码：

@@ -61,6 +61,7 @@ export default defineConfig({
         text: "第二部分：源码拆解",
         collapsed: false,
         items: [
+          { text: "源码阅读地图", link: "/source/source-map" },
           { text: "Agent Loop 主循环", link: "/source/agent-loop" },
           { text: "AgentSession 运行层", link: "/source/agent-session" }
         ]

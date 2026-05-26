@@ -40,3 +40,12 @@
 ## 阅读建议
 
 先读教程，再读源码。直接从 Pi 源码入口读起，容易被扩展、TUI、模型供应商兼容性淹没。先在教学版里把核心闭环跑通，再回到真实源码，很多“复杂”会变成“必要的工程化边界”。
+
+## 本轮核对过的官方信息
+
+| 官方信息 | 教程中如何使用 |
+| --- | --- |
+| Pi 官方文档说明 Pi 是小核心、通过 TypeScript extensions、skills、prompt templates、themes 和 packages 扩展 | 用来解释为什么本教程把核心 loop 和产品能力分开讲 |
+| SDK 文档列出 `createAgentSession()`、`AgentSession`、事件、工具、ResourceLoader、会话管理 | 用来组织 `AgentSession` 运行层和源码阅读地图 |
+| Extensions 文档覆盖工具、命令、事件和 UI 扩展 | 用来解释 before/after tool hook 与扩展点 |
+| Session Format 文档说明 JSONL session file、entry 类型和树结构 | 用来讲 `id` / `parentId` / `leafId` 与 compaction entry |
