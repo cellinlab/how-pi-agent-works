@@ -45,6 +45,7 @@ class ToolCallingModel {
   async complete(messages: Message[]): Promise<AssistantMessage> {
     const last = messages[messages.length - 1];
     if (last.role === "user") {
+      // 第一轮先让模型“提出工具调用”，而不是直接回答。
       return {
         role: "assistant",
         stopReason: "toolUse",
@@ -60,6 +61,7 @@ class ToolCallingModel {
     }
 
     const toolResult = messages.findLast((message): message is ToolResultMessage => message.role === "toolResult");
+    // 第二轮模型已经能看到 toolResult，于是可以基于真实结果回答。
     return {
       role: "assistant",
       stopReason: "stop",
@@ -89,6 +91,7 @@ async function runAgentLoop(messages: Message[]): Promise<Message[]> {
     for (const toolCall of toolCalls) {
       console.log(`tool_start: ${toolCall.name} ${JSON.stringify(toolCall.arguments)}`);
       const tool = tools.find((item) => item.name === toolCall.name);
+      // 模型只决定调用意图；真正的副作用由本地运行时执行。
       const result = tool
         ? await tool.execute(toolCall.arguments)
         : { content: `Tool not found: ${toolCall.name}` };

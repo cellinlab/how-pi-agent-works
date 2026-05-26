@@ -2,6 +2,10 @@
 
 这个 Demo 展示会话为什么要用树，而不是简单数组。
 
+## 学习目标
+
+跑完这一节，你应该能说清楚：为什么 session entry 需要稳定 `id`，为什么 `parentId` 可以表达分支，以及 `leafId` 如何决定模型能看到哪条历史路径。
+
 ## 运行
 
 ```bash
@@ -14,10 +18,14 @@ Demo 会创建一条主线，再从中间节点分出另一条分支，最后分
 
 ```text
 leaf A context:
+user: 我想实现一个 Agent。
+assistant: 可以从 Agent Loop 开始。
 user: 选择方案 A
 assistant: A 的结果
 
 leaf B context:
+user: 我想实现一个 Agent。
+assistant: 可以从 Agent Loop 开始。
 user: 选择方案 B
 assistant: B 的结果
 ```
@@ -46,6 +54,10 @@ append(message) {
   this.leafId = entry.id;
 }
 ```
+
+## 对应最终项目
+
+最终项目的 `JsonlSessionStore` 把这个内存树改成 JSONL append：每条 message entry 都会写入 `.teaching-agent/session.jsonl`，但构建上下文时仍然是从 `leafId` 沿 `parentId` 回溯。
 
 ## 改造练习
 

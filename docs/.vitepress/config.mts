@@ -81,6 +81,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: "项目总览", link: "/project/overview" },
+          { text: "Demo 到项目的映射", link: "/project/code-map" },
           { text: "后端实现", link: "/project/backend" },
           { text: "前端实现", link: "/project/frontend" },
           { text: "运行与调试", link: "/project/run" },

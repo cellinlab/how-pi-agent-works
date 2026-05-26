@@ -97,3 +97,16 @@ examples/teaching-agent/
 ├─ tsconfig.json
 └─ vite.config.ts
 ```
+
+## 和前面 Demo 的关系
+
+如果你已经跑过四个 Demo，可以把最终项目看成它们的组合版：
+
+| 机制 | Demo | 最终项目 |
+| --- | --- | --- |
+| 最小 Agent Loop | Demo 1 | `src/server/agent/loop.ts` |
+| 工具调用 | Demo 2 | `ToolRegistry` + `MockModel` |
+| 会话树 | Demo 3 | `JsonlSessionStore` |
+| 上下文压缩 | Demo 4 | `compactIfNeeded()` |
+
+更细的文件对照见 [Demo 到项目的映射](/project/code-map)。

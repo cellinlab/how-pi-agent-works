@@ -17,6 +17,7 @@ class SessionTree {
   private leafId: string | null = null;
 
   append(message: Message): string {
+    // 新 entry 总是挂在当前 leaf 后面，然后自己成为新的 leaf。
     const entry: SessionEntry = {
       id: `entry_${++this.counter}`,
       parentId: this.leafId,
@@ -37,6 +38,7 @@ class SessionTree {
   }
 
   contextFrom(leafId: string | null = this.leafId): SessionEntry[] {
+    // 构建上下文时只取 leaf 到 root 的路径，不取整个文件。
     const path: SessionEntry[] = [];
     let current = leafId ? this.byId.get(leafId) : undefined;
     while (current) {

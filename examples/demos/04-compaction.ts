@@ -31,6 +31,7 @@ for (const message of materializeContext(compacted)) {
 }
 
 function compactMessages(input: Message[], keepRecentCount: number): CompactedContext {
+  // 压缩不是删除全部旧消息，而是“摘要旧消息 + 保留最近消息”。
   const keptMessages = input.slice(-keepRecentCount);
   const summarized = input.slice(0, -keepRecentCount);
   const tokensBefore = estimateTokens(input);

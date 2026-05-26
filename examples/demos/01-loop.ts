@@ -16,6 +16,7 @@ type Emit = (event: AgentEvent) => void;
 
 class TinyModel {
   async complete(messages: Message[], emit: Emit): Promise<Message> {
+    // Demo 1 只模拟“模型生成文本”，不处理工具和持久化。
     const userText = messages
       .filter((message) => message.role === "user")
       .map((message) => message.content)
@@ -47,6 +48,7 @@ async function runAgentLoop(input: string): Promise<Message[]> {
   emit({ type: "message_start", role: "user" });
   emit({ type: "message_end", role: "user" });
 
+  // 真实 Agent Loop 的第一步也是：把当前上下文交给模型。
   const assistant = await model.complete(messages, emit);
   messages.push(assistant);
 
