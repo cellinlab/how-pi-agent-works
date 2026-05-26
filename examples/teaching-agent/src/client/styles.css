@@ -203,7 +203,7 @@ h2 {
 
 .side-panel {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
   overflow: hidden;
 }
 
@@ -218,10 +218,61 @@ h2 {
 }
 
 .tool-list,
-.event-list {
+.event-list,
+.tree-list {
   display: grid;
   gap: 10px;
   margin-top: 12px;
+}
+
+.tree-empty {
+  color: #64736e;
+  font-size: 12px;
+}
+
+.tree-node {
+  display: grid;
+  gap: 6px;
+}
+
+.tree-node-button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 1px solid #d6e0dc;
+  border-radius: 8px;
+  padding: 8px 9px;
+  color: #2f3c38;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.tree-node-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-node-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.tree-node-active {
+  border-color: #0f766e;
+  color: #0f4f49;
+  background: #edf8f6;
+}
+
+.tree-children {
+  display: grid;
+  gap: 6px;
+  margin-left: 14px;
+  padding-left: 10px;
+  border-left: 1px solid #d6e0dc;
 }
 
 .tool-card {

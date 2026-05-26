@@ -105,10 +105,12 @@ export type AgentEvent =
       originalArgs: Record<string, unknown>;
       args: Record<string, unknown>;
     }
+  | { type: "branch_switch"; leafId: string }
   | { type: "compaction"; summary: string; tokensBefore: number; firstKeptEntryId: string };
 
 export type SessionResponse = {
   sessionId: string;
+  leafId: string | null;
   messages: AgentMessage[];
   events: AgentEvent[];
   tools: ToolDefinition[];

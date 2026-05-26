@@ -31,6 +31,11 @@ test("buildContext follows the current leaf path and ignores sibling branches", 
   const context = store.buildContext();
 
   assert.deepEqual(context.map(messageText), ["root", "base", "branch b"]);
+
+  store.switchLeaf("u2");
+  assert.deepEqual(store.buildContext().map(messageText), ["root", "base", "branch a"]);
+  assert.equal(store.getLeafId(), "u2");
+  assert.throws(() => store.switchLeaf("missing"), /Unknown session entry: missing/);
 });
 
 test("compactIfNeeded records firstKeptEntryId and rebuilds summary plus recent messages", async (t) => {

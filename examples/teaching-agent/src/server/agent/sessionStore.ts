@@ -29,6 +29,17 @@ export class JsonlSessionStore {
     return [...this.entries];
   }
 
+  getLeafId(): string | null {
+    return this.leafId;
+  }
+
+  switchLeaf(leafId: string): void {
+    if (!this.byId.has(leafId)) {
+      throw new Error(`Unknown session entry: ${leafId}`);
+    }
+    this.leafId = leafId;
+  }
+
   async reset(): Promise<void> {
     if (existsSync(this.filePath)) {
       await rm(this.filePath);

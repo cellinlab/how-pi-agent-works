@@ -112,7 +112,9 @@ private pathToLeaf(): SessionEntry[] {
 }
 ```
 
-教学版暂时没有 UI 分支选择器，但这个结构已经足够以后扩展 fork/tree。
+完整仓库现在已经把这个结构做成了最小 UI：`JsonlSessionStore.switchLeaf(leafId)` 会把当前 leaf 指向已有 entry，`POST /api/branch` 调用它，前端 Session Tree 再把 `id` / `parentId` 可视化。
+
+如果你从空目录跟做，可以先实现 append 和 `buildContext()`，确认主链路能跑；等 Step 6 前端完成后，再回来补 branch endpoint 和树形 UI。
 
 ## 简化 compaction
 

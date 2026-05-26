@@ -93,9 +93,12 @@ export interface TeachingModel {
 | `POST` | `/api/prompt` | 追加用户消息，运行 Agent，返回最新状态 |
 | `POST` | `/api/runs` | 创建一次流式 run，返回 `runId` |
 | `GET` | `/api/runs/:runId/events` | 用 SSE 推送 run 内的 AgentEvent |
+| `POST` | `/api/branch` | 切换当前 `leafId`，从已有 entry 继续 |
 | `POST` | `/api/reset` | 清空教学会话 |
 
 `POST /api/prompt` 仍然保留，方便 curl 和一次性 API 调试。前端默认使用 `/api/runs` + SSE：后端会把已经发生的事件缓存在 run record 里，浏览器连接后先回放历史事件，再继续接收新事件。run 结束时发送 `run_done`，前端再用服务端返回的完整 session 对齐最终状态。
+
+`POST /api/branch` 不复制历史，也不删除分支。它只是把 `JsonlSessionStore` 的当前 leaf 指向某个已有 entry。下一次 prompt 会以这个 entry 为父节点继续生长，这正是 JSONL tree 的价值所在。
 
 ## 替换真实模型的位置
 

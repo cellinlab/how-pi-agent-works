@@ -1,4 +1,4 @@
-import { ArrowUp, FileText, Hammer, RefreshCw, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowUp, FileText, GitBranch, Hammer, RefreshCw, RotateCcw, Sparkles } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import type {
   AgentEvent,
@@ -6,6 +6,7 @@ import type {
   CreateRunResponse,
   RunStreamEvent,
   SessionResponse,
+  SessionEntry,
   TextContent,
   ToolCallContent,
   ToolDefinition,
@@ -13,6 +14,7 @@ import type {
 
 const EMPTY_SESSION: SessionResponse = {
   sessionId: "",
+  leafId: null,
   messages: [],
   events: [],
   tools: [],
@@ -60,6 +62,29 @@ export function App() {
     try {
       const response = await fetch("/api/reset", { method: "POST" });
       setSession(await response.json());
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function switchBranch(leafId: string) {
+    if (isLoading || leafId === session.leafId) return;
+    closeRunStream();
+    setError("");
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/branch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leafId }),
+      });
+      if (!response.ok) {
+        const payload = (await response.json()) as { error?: string };
+        throw new Error(payload.error ?? "Branch switch failed");
+      }
+      setSession(await response.json());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setIsLoading(false);
     }
@@ -135,6 +160,7 @@ export function App() {
   }
 
   const eventGroups = useMemo(() => summarizeEvents(session.events), [session.events]);
+  const sessionTree = useMemo(() => buildSessionTree(session.entries), [session.entries]);
 
   return (
     <main className="app-shell">
@@ -180,6 +206,25 @@ export function App() {
       </section>
 
       <aside className="side-panel">
+        <section className="panel-section">
+          <h2>Session Tree</h2>
+          <div className="tree-list">
+            {sessionTree.length === 0 ? (
+              <div className="tree-empty">No entries yet</div>
+            ) : (
+              sessionTree.map((node) => (
+                <SessionTreeNodeView
+                  key={node.id}
+                  node={node}
+                  activeLeafId={session.leafId}
+                  disabled={isLoading}
+                  onSelect={switchBranch}
+                />
+              ))
+            )}
+          </div>
+        </section>
+
         <section className="panel-section">
           <h2>Tools</h2>
           <div className="tool-list">
@@ -291,6 +336,52 @@ function ToolCard({ tool }: { tool: ToolDefinition }) {
   );
 }
 
+type SessionTreeNode = {
+  id: string;
+  label: string;
+  children: SessionTreeNode[];
+};
+
+function SessionTreeNodeView({
+  node,
+  activeLeafId,
+  disabled,
+  onSelect,
+}: {
+  node: SessionTreeNode;
+  activeLeafId: string | null;
+  disabled: boolean;
+  onSelect: (leafId: string) => void;
+}) {
+  const isActive = node.id === activeLeafId;
+  return (
+    <div className="tree-node">
+      <button
+        type="button"
+        className={`tree-node-button${isActive ? " tree-node-active" : ""}`}
+        onClick={() => onSelect(node.id)}
+        disabled={disabled}
+      >
+        <GitBranch size={14} />
+        <span>{node.label}</span>
+      </button>
+      {node.children.length > 0 ? (
+        <div className="tree-children">
+          {node.children.map((child) => (
+            <SessionTreeNodeView
+              key={child.id}
+              node={child}
+              activeLeafId={activeLeafId}
+              disabled={disabled}
+              onSelect={onSelect}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function roleLabel(message: AgentMessage): string {
   if (message.role === "toolResult") return `tool:${message.toolName}`;
   return message.role;
@@ -324,6 +415,8 @@ function summarizeEvents(events: AgentEvent[]): string[] {
         return `tool_end: ${event.toolName}${event.isError ? " error" : ""}`;
       case "tool_permission":
         return `tool_permission ${event.action}: ${event.toolName}${event.reason ? ` (${event.reason})` : ""}`;
+      case "branch_switch":
+        return `branch_switch: ${event.leafId}`;
       case "agent_end":
         return `agent_end: ${event.messages.length} new messages`;
       case "compaction":
@@ -332,4 +425,49 @@ function summarizeEvents(events: AgentEvent[]): string[] {
         return event.type;
     }
   });
+}
+
+function buildSessionTree(entries: SessionEntry[]): SessionTreeNode[] {
+  const nodes = new Map<string, SessionTreeNode>();
+  const parentById = new Map<string, string | null>();
+
+  for (const entry of entries) {
+    if (entry.type === "session") continue;
+    nodes.set(entry.id, { id: entry.id, label: entryLabel(entry), children: [] });
+    parentById.set(entry.id, entry.parentId);
+  }
+
+  const roots: SessionTreeNode[] = [];
+  for (const [id, node] of nodes) {
+    const parentId = parentById.get(id);
+    const parent = parentId ? nodes.get(parentId) : undefined;
+    if (parent) {
+      parent.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  return roots;
+}
+
+function entryLabel(entry: Exclude<SessionEntry, { type: "session" }>): string {
+  if (entry.type === "compaction") {
+    return `${entry.id} compaction`;
+  }
+
+  const message = entry.message;
+  if (message.role === "assistant") {
+    const toolNames = message.content
+      .filter((block): block is ToolCallContent => block.type === "toolCall")
+      .map((block) => block.name)
+      .join(", ");
+    return `${entry.id} assistant${toolNames ? ` -> ${toolNames}` : ""}`;
+  }
+  if (message.role === "toolResult") {
+    return `${entry.id} tool:${message.toolName}`;
+  }
+
+  const content = messageText(message).replace(/\s+/g, " ").slice(0, 34);
+  return `${entry.id} user${content ? `: ${content}` : ""}`;
 }

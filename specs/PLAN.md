@@ -373,7 +373,7 @@ Pi 的真实系统可以按三层理解：
 - 增加运行状态与错误收尾。
 - 更新文档与验证。
 
-### Commit 20：最小会话树 UI 与 branch endpoint（待开始）
+### Commit 20：最小会话树 UI 与 branch endpoint（已完成）
 
 - 在 `JsonlSessionStore` 中暴露安全的 leaf 切换方法。
 - 新增 `POST /api/branch`，允许从已有 entry 继续。

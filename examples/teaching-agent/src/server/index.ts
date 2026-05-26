@@ -41,6 +41,26 @@ app.post("/api/reset", async (_req, res) => {
   res.json(createResponse());
 });
 
+app.post("/api/branch", (req, res) => {
+  const leafId = typeof req.body?.leafId === "string" ? req.body.leafId.trim() : "";
+  if (!leafId) {
+    res.status(400).json({ error: "leafId is required" });
+    return;
+  }
+  if (activeRun) {
+    res.status(409).json({ error: "another run is already active" });
+    return;
+  }
+
+  try {
+    store.switchLeaf(leafId);
+    eventLog.push({ type: "branch_switch", leafId });
+    res.json(createResponse());
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : String(error) });
+  }
+});
+
 app.post("/api/prompt", async (req, res) => {
   const input = typeof req.body?.text === "string" ? req.body.text.trim() : "";
   if (!input) {
@@ -125,6 +145,7 @@ app.listen(port, () => {
 function createResponse(): SessionResponse {
   return {
     sessionId: store.getSessionId(),
+    leafId: store.getLeafId(),
     messages: store.buildContext(),
     events: [...eventLog],
     tools: toolRegistry.definitions(),

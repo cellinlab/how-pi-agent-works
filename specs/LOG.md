@@ -596,3 +596,28 @@
   - `npm run teaching-agent:build` 成功。
   - `npm run docs:build` 成功。
   - 启动 `npm run teaching-agent:dev` 后，用 curl 验证 `/api/runs` 与 SSE 事件流，确认包含 `tool_permission`、`agent_end` 和 `run_done`。
+
+### 30. 最小会话树 UI 与 branch endpoint
+
+- 后端会话能力：
+  - `JsonlSessionStore` 新增 `getLeafId()`。
+  - `JsonlSessionStore` 新增 `switchLeaf(leafId)`，允许切换到已有 entry。
+  - `SessionResponse` 新增 `leafId`。
+  - 新增 `POST /api/branch`，用于切换当前 leaf。
+  - 新增 `branch_switch` event，方便 Event Timeline 展示分支切换。
+- 前端能力：
+  - 侧栏新增 Session Tree 区域。
+  - 前端按 `entries[].parentId` 构建树。
+  - 当前 leaf 高亮显示。
+  - 点击节点会调用 `/api/branch` 并刷新当前上下文。
+- 文档同步：
+  - 更新后端 API 表。
+  - 更新前端实现页，解释 Session Tree 为什么存在、如何调用 `/api/branch`。
+  - 更新 Step 4，说明 `switchLeaf()` 与 branch endpoint 可在主链路跑通后补。
+  - 更新扩展方向页，将最小会话树 UI 标记为已实现。
+- 验证：
+  - `npm run teaching-agent:test` 成功，9 个测试通过。
+  - `npm run teaching-agent:typecheck` 成功。
+  - `npm run teaching-agent:build` 成功。
+  - `npm run docs:build` 成功。
+  - 启动 `npm run teaching-agent:dev` 后，用 curl 验证 `/api/branch` 可将 `leafId` 切回 `entry_1`，返回上下文只包含该 leaf 路径，并记录 `branch_switch` event。
