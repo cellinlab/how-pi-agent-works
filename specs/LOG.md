@@ -216,3 +216,27 @@
   - `docs/.vitepress/dist/`
   - `examples/teaching-agent/dist/`
   - `examples/teaching-agent/.teaching-agent/`
+
+### 14. 最终内容完成阶段启动
+
+- 用户确认继续按计划把所有教程内容补齐。
+- 本轮重新核对资料来源：
+  - `https://pi.dev/docs/latest`
+  - `https://pi.dev/docs/latest/sdk`
+  - `https://pi.dev/docs/latest/extensions`
+  - `https://pi.dev/docs/latest/session-format`
+  - `https://github.com/earendil-works/pi`
+- 本地源码参考仍使用 `/tmp/pi-source`，已确认关键包：
+  - `@earendil-works/pi-ai`
+  - `@earendil-works/pi-agent-core`
+  - `@earendil-works/pi-coding-agent`
+  - `@earendil-works/pi-tui`
+- 本轮提交拆分：
+  - Commit 5：最终阶段计划登记。
+  - Commit 6：源码深挖与概念闭环。
+  - Commit 7：从零实现最终项目教程。
+  - Commit 8：最终验证与交付日志。
+- 范围约束：
+  - 不接真实模型 API。
+  - 不引入生产级权限系统、多 session UI 或 OAuth。
+  - 教程目标仍是让本科毕业生可以跟做一个保留 Pi 核心思想的教学版 Agent。
