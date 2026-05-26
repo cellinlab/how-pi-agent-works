@@ -65,7 +65,9 @@ sequenceDiagram
   participant Model as MockModel
   participant Tool as ToolRegistry
 
-  UI->>API: POST /api/prompt
+  UI->>API: POST /api/runs
+  API-->>UI: runId
+  UI->>API: GET /api/runs/:runId/events
   API->>Store: append user message
   API->>Store: buildContext()
   API->>AgentLoop: runAgentLoop(context)
@@ -77,8 +79,11 @@ sequenceDiagram
   Model-->>AgentLoop: final answer
   AgentLoop-->>API: newMessages + events
   API->>Store: append newMessages
-  API-->>UI: messages + events
+  API-->>UI: SSE AgentEvent
+  API-->>UI: run_done + full session
 ```
+
+`POST /api/prompt` 仍然保留，方便 curl 调试；浏览器默认使用 `/api/runs` + SSE，这样读者能看到消息和工具事件逐步进入 UI。
 
 ## 为什么先用 MockModel
 

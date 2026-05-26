@@ -394,6 +394,17 @@ Pi 的真实系统可以按三层理解：
   - 桌面与移动视口。
 - 清理临时产物，更新 `specs/LOG.md`。
 
+### Commit 22：文档一致性复查收口（已完成）
+
+- 修正第三轮工程增强后遗留的旧文档表述：
+  - `docs/project/overview.md` 的“一次请求的后端流程”改为 `/api/runs` + SSE。
+  - `docs/project/build-06-frontend.md` 改为四区布局：聊天、Session Tree、工具列表、事件时间线。
+  - `docs/project/build-06-frontend.md` 的数据流说明改为 `/api/runs` + `EventSource`，同时保留 `/api/prompt` 作为跟做最小版建议。
+  - `docs/project/extend.md` 不再把 SSE 描述为“下一步”，改为已实现的两段式流式 UI。
+- 验收：
+  - `npm run docs:build` 通过。
+  - `git diff --check` 通过。
+
 ## 历史计划：内容补强收口（已完成并归档）
 
 以下计划来自早期内容补强阶段，已经由后续 Commit 1-4 以及 Commit 5-16 逐步完成。保留它是为了追溯任务演进，不再作为待执行计划。

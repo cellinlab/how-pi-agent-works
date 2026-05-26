@@ -651,3 +651,20 @@
   - 已停止教学版 dev server。
   - 已删除 `docs/.vitepress/dist/`、`docs/.vitepress/cache/`、`examples/teaching-agent/dist/`、`examples/teaching-agent/.teaching-agent/`、`.playwright-cli/`、`output/`。
   - 使用 `rg` 确认仓库中没有临时 API Key。
+
+### 32. 文档一致性复查收口
+
+- 用户询问是否还有未完成任务后，重新检查：
+  - `git status --short`
+  - `specs/PLAN.md` 进行中/待开始状态
+  - `TODO` / `FIXME` / 临时 API Key / 测试 endpoint
+  - 构建、会话、Playwright 临时产物
+- 发现旧表述并修复：
+  - `docs/project/extend.md` 仍把 SSE 写成下一步计划。
+  - `docs/project/build-06-frontend.md` 仍说教学版没有 streaming UI。
+  - `docs/project/overview.md` 的请求链路仍只画 `/api/prompt`。
+- 修复后状态：
+  - 概览页、Step 6 和扩展页都与当前实现一致：浏览器默认 `/api/runs` + SSE，`/api/prompt` 保留为 curl/跟做最小版调试入口。
+- 验证：
+  - `npm run docs:build` 成功。
+  - `git diff --check` 成功。

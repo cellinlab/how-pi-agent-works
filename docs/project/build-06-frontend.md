@@ -1,6 +1,6 @@
 # Step 6：React 前端
 
-前端不是 Agent 的核心，但它能把核心机制变得可观察。教学版页面有三个区域：聊天、工具列表、事件时间线。
+前端不是 Agent 的核心，但它能把核心机制变得可观察。教学版页面有四个区域：聊天、Session Tree、工具列表、事件时间线。
 
 对应文件：
 
@@ -28,6 +28,7 @@ flowchart TB
   App["App"] --> Topbar["刷新 / 重置"]
   App --> Chat["MessageCard[]"]
   App --> Composer["输入框 + 发送按钮"]
+  App --> Tree["Session Tree"]
   App --> Tools["ToolCard[]"]
   App --> Timeline["Event Timeline"]
 ```
@@ -37,6 +38,7 @@ flowchart TB
 | 区域 | 让读者观察什么 |
 | --- | --- |
 | 聊天区 | user、assistant、toolResult 都是消息 |
+| Session Tree | `id` / `parentId` 如何形成分支，当前 `leafId` 在哪里 |
 | 工具列表 | 当前 Agent 有哪些可调用能力 |
 | 事件时间线 | 一次 prompt 的内部生命周期 |
 
@@ -54,15 +56,20 @@ async function refresh() {
 发送消息时：
 
 ```ts
-const response = await fetch("/api/prompt", {
+const response = await fetch("/api/runs", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ text }),
 });
-setSession(await response.json());
+const { runId } = await response.json();
+const source = new EventSource(`/api/runs/${runId}/events`);
 ```
 
-教学版没有做 streaming UI，因为后端当前是一次性返回事件数组。但事件结构已经和 streaming UI 兼容，后面可以替换成 SSE 或 WebSocket。
+完整仓库已经使用 SSE：`message_start/update/end` 会增量更新聊天区，`tool_execution_start/end` 和 `tool_permission` 会进入事件时间线，最后 `run_done` 用完整 session 对齐最终状态。
+
+::: tip 跟做建议
+如果你从空目录第一次实现，可以先用 `POST /api/prompt` 一次性返回 JSON，让页面跑起来；再按完整仓库把提交逻辑升级成 `/api/runs` + SSE。这样学习曲线更平。
+:::
 
 ## 最小可运行页面
 
@@ -85,6 +92,7 @@ export function App() {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    // 跟做最小版可以先用 /api/prompt；完整仓库默认走 /api/runs + SSE。
     const response = await fetch("/api/prompt", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

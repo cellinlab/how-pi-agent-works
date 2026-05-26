@@ -128,7 +128,7 @@ const result = await toolRegistry.execute(toolCall.name, args);
 
 ## 3. 真正流式 UI：用 SSE 推事件
 
-当前教学版是 `POST /api/prompt` 等 loop 跑完后一次性返回。下一步可以改成两段式：
+当前教学版已经实现两段式 SSE：浏览器先创建 run，再订阅该 run 的事件流。`POST /api/prompt` 仍然保留给 curl 和一次性 API 调试。
 
 ```mermaid
 sequenceDiagram
