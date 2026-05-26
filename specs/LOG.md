@@ -516,7 +516,7 @@
   - 已关闭 Playwright browser。
   - 已停止教学版 dev server。
   - 已删除 `docs/.vitepress/dist/`、`docs/.vitepress/cache/`、`examples/teaching-agent/dist/`、`examples/teaching-agent/.teaching-agent/`、`.playwright-cli/`、`output/`。
-  - 使用 `rg` 确认仓库中没有临时 API Key 或 `token-plan-cn.xiaomimimo.com` endpoint。
+  - 使用 `rg` 确认仓库中没有临时 API Key。
 
 ### 27. 总回顾与入口计划收口
 
@@ -533,7 +533,7 @@
 - 事实与资源核对：
   - `git remote -v` 确认为 `cellinlab/how-pi-agent-works`，与 VitePress edit link 一致。
   - 根目录 `public/` 与 `docs/public/` 均包含联系与赞助二维码资源。
-  - `rg` 未发现临时 API Key 或 `token-plan-cn.xiaomimimo.com` endpoint。
+  - `rg` 未发现临时 API Key。
 - 验证：
   - `npm run docs:build` 成功。
   - `npm run teaching-agent:test` 成功，7 个测试通过。
@@ -621,3 +621,33 @@
   - `npm run teaching-agent:build` 成功。
   - `npm run docs:build` 成功。
   - 启动 `npm run teaching-agent:dev` 后，用 curl 验证 `/api/branch` 可将 `leafId` 切回 `entry_1`，返回上下文只包含该 leaf 路径，并记录 `branch_switch` event。
+
+### 31. 第三轮最终验证
+
+- 文档与 Demo：
+  - `npm run docs:build` 成功。
+  - `npm run demo:01` 成功。
+  - `npm run demo:02` 成功。
+  - `npm run demo:03` 成功。
+  - `npm run demo:04` 成功。
+  - `npm run demo:05` 在未配置环境变量时按预期跳过，退出成功。
+- 教学版 Agent：
+  - `npm run teaching-agent:test` 成功，9 个测试通过。
+  - `npm run teaching-agent:typecheck` 成功。
+  - `npm run teaching-agent:build` 成功。
+- 浏览器验证：
+  - 启动 `npm run teaching-agent:dev` 成功。
+  - Playwright 打开 `http://localhost:5174/` 成功。
+  - 输入“写一条 secret 笔记”，SSE 流式完成后页面展示：
+    - `write_note` tool call。
+    - `tool:write_note` 错误工具结果。
+    - `tool_permission block: write_note` 时间线事件。
+    - Session Tree 中的 `entry_1` 到 `entry_4`。
+  - 点击 Session Tree 的 `entry_1` 后，聊天区只保留当前 leaf 路径上的 user 消息，Event Timeline 出现 `branch_switch: entry_1`。
+  - 390px 移动视口无横向溢出，`documentElement.scrollWidth === clientWidth`。
+  - 浏览器 console error 为 0。
+- 清理：
+  - 已关闭 Playwright browser。
+  - 已停止教学版 dev server。
+  - 已删除 `docs/.vitepress/dist/`、`docs/.vitepress/cache/`、`examples/teaching-agent/dist/`、`examples/teaching-agent/.teaching-agent/`、`.playwright-cli/`、`output/`。
+  - 使用 `rg` 确认仓库中没有临时 API Key。
