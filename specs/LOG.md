@@ -462,3 +462,23 @@
   - `npm run teaching-agent:build` 成功。
   - `npm run docs:build` 成功。
   - `git diff --check` 成功。
+
+### 25. 进阶扩展方向工程草图
+
+- 重写 `docs/project/extend.md`：
+  - 增加扩展路线图，串联 provider adapter、tool permission hook、SSE streaming UI 和 session tree UI。
+  - 解释为什么 provider 适配层不应该泄漏到 Agent Loop，并对照 Pi 的 `pi-ai` 分层。
+  - 给出教学版 `beforeToolCall` 权限 hook 草图，覆盖 allow/block/rewrite/confirm 四类决策。
+  - 给出 SSE 后端事件推送和 React 增量状态设计，覆盖 `message_update`、`tool_execution_start/end`。
+  - 给出会话树 UI 的 API、树构建、leaf 切换和 branch summary 扩展路线。
+  - 增加 Agent 失败模式专项表，包括无限 tool call、工具输出过长、模型不调用工具、参数 JSON 错误、provider 超时/断流、路径越界、并发写 session 等。
+- 更新 `docs/reference/sources.md`：
+  - 增加 Pi 官方 RPC Mode 文档作为事件流和外部 UI 集成参考。
+- 事实核对：
+  - Pi 官方 Extensions 文档确认扩展可监听 `tool_call`、`tool_result`，并可通过 UI 方法做确认、选择、输入等交互。
+  - Pi 官方 SDK 文档确认 `AgentSession.subscribe()` 接收 `message_update`、`tool_execution_start/update/end` 等事件。
+  - Pi 官方 RPC Mode 文档确认 JSONL 事件流包含 agent、turn、message、tool execution、compaction、retry 等事件类型。
+  - 教程中明确区分真实 Pi 的 `tool_call` hook 与教学版建议命名 `beforeToolCall`。
+- 验证：
+  - `npm run docs:build` 成功。
+  - `git diff --check` 成功。

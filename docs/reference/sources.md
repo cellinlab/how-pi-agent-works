@@ -12,6 +12,7 @@
 | [Session File Format](https://pi.dev/docs/latest/session-format) | JSONL 格式、entry 类型、`id` / `parentId` 树结构 |
 | [Compaction](https://pi.dev/docs/latest/compaction) | 上下文压缩、branch summary、cut point 规则 |
 | [Extensions](https://pi.dev/docs/latest/extensions) | 扩展、工具注册、事件 hook、命令、UI 能力 |
+| [RPC Mode](https://pi.dev/docs/latest/rpc) | RPC / UI 集成时的事件订阅和外部前端通信参考 |
 | [Skills](https://pi.dev/docs/latest/skills) | 技能发现、按需加载、`SKILL.md` 结构 |
 | [Prompt Templates](https://pi.dev/docs/latest/prompt-templates) | 区分 prompt template、skill、context file 的职责 |
 | [Xiaomi MiMo First API Call](https://platform.xiaomimimo.com/docs/zh-CN/quick-start/first-api-call) | 可选真实模型 Demo 的 OpenAI-compatible 调用方式 |
