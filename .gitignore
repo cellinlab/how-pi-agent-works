@@ -6,3 +6,4 @@ dist/
 output/
 examples/teaching-agent/.teaching-agent/
 examples/teaching-agent/dist/
+.vercel/

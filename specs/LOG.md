@@ -398,6 +398,27 @@
   - `npm run docs:build` 成功。
   - `git diff --check` 成功。
 
+### 33. Vercel 配置与生产部署
+
+- 配置：
+  - 新增根目录 `vercel.json`，将 Vercel 构建限定为 VitePress 教程站点。
+  - `installCommand` 使用 `npm install`。
+  - `buildCommand` 使用 `npm run docs:build`。
+  - `outputDirectory` 使用 `docs/.vitepress/dist`。
+  - README 增加 Vercel 部署说明，并明确教学版 Express API 仍作为本地教学运行时。
+  - Vercel CLI 自动生成 `.vercel/` 本地链接目录，已加入 `.gitignore`，不提交项目 ID。
+- 验证：
+  - `npm run docs:build` 成功；仍有 VitePress/Rollup chunk size warning，不影响构建。
+  - `git diff --check` 成功。
+  - `npx vercel whoami` 成功，当前账号为 `cellinlab`。
+  - `curl -L -I https://how-pi-agent-works.vercel.app` 返回 HTTP 200。
+  - `npx vercel inspect https://how-pi-agent-works.vercel.app` 显示部署状态为 Ready。
+- 部署：
+  - 执行 `npx vercel deploy --prod --yes` 成功。
+  - Production URL：`https://how-pi-agent-works-qr1tnsmpp-cellinlabs-projects.vercel.app`。
+  - Alias：`https://how-pi-agent-works.vercel.app`。
+  - Inspect URL：`https://vercel.com/cellinlabs-projects/how-pi-agent-works/5ysThdxkfRv5hp2o2LRqkj2hRrHp`。
+
 ### 22. Provider adapter 与真实模型教学链路
 
 - 更新 `examples/demos/05-openai-compatible.ts`：

@@ -22,6 +22,22 @@ npm run docs:dev
 npm run docs:build
 ```
 
+## 部署教程站点到 Vercel
+
+本仓库默认部署 VitePress 教程站点，配置见 `vercel.json`：
+
+- Install Command：`npm install`
+- Build Command：`npm run docs:build`
+- Output Directory：`docs/.vitepress/dist`
+
+本地已登录 Vercel CLI 时，可以执行：
+
+```bash
+npx vercel deploy --prod
+```
+
+教学版 Agent 的 Express API 仍是本地教学运行时，不随这个静态站点配置一起部署。
+
 ## 运行渐进式 Demo
 
 ```bash

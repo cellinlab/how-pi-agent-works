@@ -405,6 +405,25 @@ Pi 的真实系统可以按三层理解：
   - `npm run docs:build` 通过。
   - `git diff --check` 通过。
 
+## Vercel 部署计划
+
+用户要求加上 Vercel 配置并部署。本阶段只部署 VitePress 教程站点，不把教学版 Node API 作为生产后端部署；教学版 Agent 仍作为本地教学项目运行。
+
+### Commit 23：Vercel 配置与部署（已完成）
+
+- 新增 `vercel.json`：
+  - build command 使用 `npm run docs:build`。
+  - output directory 指向 `docs/.vitepress/dist`。
+  - install command 使用 `npm install`。
+- 更新 README，补充 Vercel 部署说明。
+- 本地验证：
+  - `npm run docs:build`。
+  - `git diff --check`。
+- 部署：
+  - 检查 Vercel CLI 登录状态。
+  - 若本机已登录/可链接项目，则执行生产部署。
+  - 若缺少登录或项目授权，记录阻塞点和下一步命令。
+
 ## 历史计划：内容补强收口（已完成并归档）
 
 以下计划来自早期内容补强阶段，已经由后续 Commit 1-4 以及 Commit 5-16 逐步完成。保留它是为了追溯任务演进，不再作为待执行计划。
