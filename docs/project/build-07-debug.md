@@ -11,6 +11,24 @@ npm run teaching-agent:build
 
 如果这里失败，先不要启动浏览器。TypeScript 和 Vite build 能抓住大多数协议和前端编译问题。
 
+如果你在自己的空目录跟做，命令是：
+
+```bash
+npm run typecheck
+npm run build
+```
+
+## 跟做验收清单
+
+| 阶段 | 命令 | 预期 |
+| --- | --- | --- |
+| 协议 | `npm run typecheck` | 没有 TS 错误 |
+| 后端 API | `npm run dev:server` | 打印 `Teaching Agent API listening` |
+| 前端 | `npm run dev:web` | Vite 打印本地地址 |
+| 全栈 | `npm run dev` | API 和 Web 同时启动 |
+| Prompt | `curl -X POST .../api/prompt` | 返回 4 条上下文消息 |
+| 构建 | `npm run build` | 生成 `dist/` |
+
 ## 再跑 API
 
 启动：
@@ -84,6 +102,16 @@ curl -X POST http://localhost:4317/api/prompt \
 | 路径越界报错 | `resolveInsideWorkspace()` 是否正确拦截 |
 | 时间线没有工具事件 | loop 是否 emit `tool_execution_start/end` |
 
+## 常见报错原文
+
+| 报错 | 多半原因 | 修复 |
+| --- | --- | --- |
+| `ERR_MODULE_NOT_FOUND` | import 路径少了 `.ts` 不一定是问题，更多是相对路径层级错 | 对照文件位置重新计算 `../` |
+| `Cannot GET /api/session` | 请求打到了 Vite，但 proxy 没配或 API 没启动 | 检查 `vite.config.ts` proxy 和 `dev:server` |
+| `Path escapes workspace` | 工具参数包含 `..` 或绝对路径 | 这是安全拦截生效，不是 bug |
+| `Tool not found` | MockModel 返回的工具名没有注册 | 检查 `createToolRegistry()` |
+| 页面一直禁用发送按钮 | `isLoading` 没在 finally 里恢复 | 确保请求成功/失败都 `setIsLoading(false)` |
+
 ## 清理验证产物
 
 这些文件不要提交：
@@ -115,3 +143,18 @@ git status --short
 
 故意把 `read_file` 的路径改成 `../README.md`，观察 API 返回、toolResult、前端时间线分别怎么表现。一个好的 Agent 教学项目，错误路径也应该可解释，而不是直接崩溃。
 
+## 最终 checkpoint
+
+```bash
+npm run typecheck
+npm run build
+git add .
+git commit -m "step 7: verify teaching agent"
+```
+
+如果你是在本仓库里验证完整教学版，对应命令是：
+
+```bash
+npm run teaching-agent:typecheck
+npm run teaching-agent:build
+```

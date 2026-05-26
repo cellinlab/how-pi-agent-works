@@ -10,6 +10,82 @@ examples/teaching-agent/src/server/agent/mockModel.ts
 examples/teaching-agent/src/server/agent/message.ts
 ```
 
+## 本节新增文件
+
+```text
+src/server/agent/message.ts
+src/server/agent/mockModel.ts
+src/server/agent/loop.ts
+```
+
+这一步只在内存里跑通 loop，不接 Express，不写 JSONL。先让 Agent 的“心跳”动起来。
+
+## 先写消息 helper
+
+```ts
+import type { AgentMessage, AssistantMessage, TextContent, UserMessage } from "../../shared/protocol";
+
+export function text(value: string): TextContent {
+  return { type: "text", text: value };
+}
+
+export function createUserMessage(input: string): UserMessage {
+  return { role: "user", content: [text(input)], timestamp: Date.now() };
+}
+
+export function createAssistantMessage(
+  content: AssistantMessage["content"],
+  stopReason: AssistantMessage["stopReason"] = "stop",
+): AssistantMessage {
+  return {
+    role: "assistant",
+    content,
+    stopReason,
+    usage: { input: 0, output: 0, totalTokens: 0 },
+    timestamp: Date.now(),
+  };
+}
+
+export function messageText(message: AgentMessage): string {
+  return message.content.filter((block) => block.type === "text").map((block) => block.text).join("\n");
+}
+```
+
+## 再写 MockModel 的最小版本
+
+```ts
+import type { AgentMessage, AssistantMessage, ToolDefinition } from "../../shared/protocol";
+import { createAssistantMessage, messageText, text } from "./message";
+
+type CompleteInput = {
+  systemPrompt: string;
+  messages: AgentMessage[];
+  tools: ToolDefinition[];
+};
+
+export class MockModel {
+  async complete(input: CompleteInput): Promise<AssistantMessage> {
+    const last = input.messages[input.messages.length - 1];
+    if (!last) return createAssistantMessage([text("还没有上下文。")]);
+
+    if (last.role === "toolResult") {
+      return createAssistantMessage([text(`我看到了工具结果：${messageText(last)}`)]);
+    }
+
+    if (last.role === "user" && messageText(last).includes("文件")) {
+      return createAssistantMessage(
+        [{ type: "toolCall", id: `call_${Date.now()}`, name: "list_files", arguments: { path: "." } }],
+        "toolUse",
+      );
+    }
+
+    return createAssistantMessage([text("教学版 Agent 收到你的问题。")]);
+  }
+}
+```
+
+这不是“智能模型”，它只是稳定地产生 tool call。稳定性正是教学阶段需要的。
+
 ## 为什么先用 MockModel
 
 真实模型会引入很多额外变量：API Key、网络、provider tool call 格式、流式事件、速率限制。教学版先用确定性 `MockModel`，让你专注 Agent Loop。
@@ -36,6 +112,8 @@ type RunAgentLoopOptions = {
   onEvent?: (event: AgentEvent) => void;
 };
 ```
+
+如果你从空目录跟做，先让 `loop.ts` 返回 `newMessages/events`，不要在这里写文件。文件持久化会在 Step 5 的 API 层完成。
 
 返回值只包含本次新增内容：
 
@@ -133,6 +211,39 @@ agent_end
 
 你可以在前端 Event Timeline 里看到这条链路。
 
+如果你还没写 API，可以临时建一个 `src/server/smoke.ts`：
+
+```ts
+import { runAgentLoop } from "./agent/loop";
+import { createUserMessage } from "./agent/message";
+import { MockModel } from "./agent/mockModel";
+
+const result = await runAgentLoop({
+  systemPrompt: "你是教学 Agent。",
+  messages: [createUserMessage("列出工作区文件")],
+  tools: [{ name: "list_files", description: "List files.", parameters: { type: "object" } }],
+  model: new MockModel(),
+  toolRegistry: {
+    definitions: () => [],
+    execute: async () => ({ content: [{ type: "text", text: "README.md" }] }),
+  },
+});
+
+console.log(result.newMessages.map((message) => message.role));
+```
+
+运行：
+
+```bash
+npx tsx src/server/smoke.ts
+```
+
+预期至少看到：
+
+```text
+[ 'assistant', 'toolResult', 'assistant' ]
+```
+
 ## 常见错误
 
 | 错误 | 后果 |
@@ -146,3 +257,9 @@ agent_end
 
 把 `maxTurns` 改成 `1`，再输入“读取 agent-notes.md”。观察为什么 Agent 只能产生 tool call，却来不及基于工具结果回答。这个练习会让你真正理解“工具调用通常要两轮模型请求”。
 
+## 本节 checkpoint
+
+```bash
+git add src/server/agent
+git commit -m "step 2: add mock model and agent loop"
+```

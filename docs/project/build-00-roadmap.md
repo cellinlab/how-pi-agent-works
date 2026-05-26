@@ -55,6 +55,95 @@ npm run dev
 
 如果你想真正从空目录练习，可以新建一个目录，把每一步的代码按章节复制进去。跟做时建议每完成一步就提交一次，这样出错后可以回到最近的可运行状态。
 
+## 从空目录开始
+
+如果你要完全手写一遍，可以按这个脚手架开始。它和 `examples/teaching-agent/` 的结构一致，只是你会在后续 Step 里逐步填文件。
+
+```bash
+mkdir pi-agent-teaching
+cd pi-agent-teaching
+npm init -y
+npm pkg set type=module
+mkdir -p src/shared src/server/agent src/client workspace public
+```
+
+安装依赖：
+
+```bash
+npm install express react react-dom lucide-react @vitejs/plugin-react concurrently vite tsx
+npm install -D typescript @types/node @types/express @types/react @types/react-dom
+```
+
+把 `package.json` 调整到这个最小形态：
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c cyan,green \"npm:dev:server\" \"npm:dev:web\"",
+    "dev:server": "tsx watch src/server/index.ts",
+    "dev:web": "vite --host 0.0.0.0 --port 5174",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  }
+}
+```
+
+创建 `tsconfig.json`：
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src", "vite.config.ts"]
+}
+```
+
+创建 `vite.config.ts`，让前端请求 `/api/*` 时自动代理到 Express：
+
+```ts
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 5174,
+    proxy: {
+      "/api": "http://localhost:4317"
+    }
+  }
+});
+```
+
+创建两个示例文件，后面工具会读取它们：
+
+```bash
+cat > workspace/README.md <<'EOF'
+# Teaching Workspace
+
+这是教学版 Agent 的安全工作区。
+EOF
+
+cat > workspace/agent-notes.md <<'EOF'
+# Agent Notes
+
+Agent Loop = context -> model -> tools -> toolResult -> next turn.
+EOF
+```
+
+::: tip 跟做版本 vs 完整仓库版本
+后续 Step 会给你“本节新增文件”和关键代码。你可以在自己的空目录里手写，也可以打开 `examples/teaching-agent/` 对照完整实现。跟做时先追求能跑通，再回头补样式和边界。
+:::
+
 ## 每一步的验收
 
 | 页面 | 验收命令或动作 |
@@ -66,6 +155,15 @@ npm run dev
 | [Step 5：Express API](/project/build-05-api) | `GET /api/session`、`POST /api/prompt` 正常 |
 | [Step 6：React 前端](/project/build-06-frontend) | 浏览器能看到聊天、工具、事件 |
 | [Step 7：调试与验收](/project/build-07-debug) | 构建、API、桌面/移动视口通过 |
+
+每一步完成后建议提交一次：
+
+```bash
+git add .
+git commit -m "step N: ..."
+```
+
+这不是形式主义。Agent 项目的 bug 经常跨越协议、loop、工具和存储，阶段提交能帮你快速回到上一个可运行点。
 
 ## 不要一开始就做的事
 
@@ -79,4 +177,3 @@ npm run dev
 ## 小练习
 
 在开始写代码前，画出你自己的最小消息类型：`UserMessage`、`AssistantMessage`、`ToolResultMessage`。不要看下一章，先试着回答一个问题：工具调用应该放在 assistant message 里，还是单独放一张表里？
-

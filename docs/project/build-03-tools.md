@@ -8,6 +8,16 @@
 examples/teaching-agent/src/server/agent/tools.ts
 ```
 
+## 本节新增文件
+
+```text
+src/server/agent/tools.ts
+workspace/README.md
+workspace/agent-notes.md
+```
+
+本节只做本地工具系统。工具先能被 loop 调用，前端和 API 之后再接。
+
 ## 这一步解决什么问题
 
 模型不能直接读写文件。它只能提出：
@@ -54,6 +64,33 @@ export class ToolRegistry {
 ```
 
 注意 `definitions()` 不暴露 `execute`。模型只需要知道工具名称、描述和参数 schema，执行函数永远留在本地。
+
+## 最小可复制 diff
+
+如果你已经写完 Step 2，这一节的关键增量是：
+
+```diff
++ export class ToolRegistry {
++   private readonly tools = new Map<string, RegisteredTool>();
++   register(tool: RegisteredTool): void { this.tools.set(tool.name, tool); }
++   definitions(): ToolDefinition[] { return Array.from(this.tools.values()).map(stripExecute); }
++   async execute(name: string, args: Record<string, unknown>): Promise<ToolResult> {
++     const tool = this.tools.get(name);
++     if (!tool) throw new Error(`Tool not found: ${name}`);
++     return tool.execute(args);
++   }
++ }
++
++ export function createToolRegistry(workspaceRoot: string): ToolRegistry {
++   const registry = new ToolRegistry();
++   registry.register(listFilesTool(workspaceRoot));
++   registry.register(readFileTool(workspaceRoot));
++   registry.register(writeNoteTool(workspaceRoot));
++   return registry;
++ }
+```
+
+完整实现请对照 `examples/teaching-agent/src/server/agent/tools.ts`。跟做时先把 `list_files` 跑通，再补 `read_file` 和 `write_note`。
 
 ## 三个内置工具
 
@@ -124,6 +161,21 @@ message_update: 我读取到了文件内容...
 
 预期回答里会出现 `agent-notes.md` 的内容摘要。
 
+如果你还没有前端，可以在 `smoke.ts` 里直接调用：
+
+```ts
+const registry = createToolRegistry(resolve(process.cwd(), "workspace"));
+console.log(await registry.execute("list_files", { path: "." }));
+console.log(await registry.execute("read_file", { path: "agent-notes.md" }));
+```
+
+预期输出里至少包含：
+
+```text
+README.md
+agent-notes.md
+```
+
 ## 常见错误
 
 | 错误 | 后果 |
@@ -137,3 +189,9 @@ message_update: 我读取到了文件内容...
 
 给 `write_note` 加一个限制：`fileName` 必须以 `.md` 结尾。输入不合法时抛错，让 loop 把它转成 `isError: true` 的 tool result。
 
+## 本节 checkpoint
+
+```bash
+git add src/server/agent/tools.ts workspace
+git commit -m "step 3: add safe workspace tools"
+```

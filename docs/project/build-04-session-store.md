@@ -8,6 +8,15 @@
 examples/teaching-agent/src/server/agent/sessionStore.ts
 ```
 
+## 本节新增文件
+
+```text
+src/server/agent/sessionStore.ts
+.teaching-agent/session.jsonl  # 运行后生成，不提交
+```
+
+这一步开始从“内存上下文”进入“可恢复上下文”。注意 `.teaching-agent/` 是运行产物，应该放进 `.gitignore`。
+
 ## 这一步解决什么问题
 
 Agent 每次请求模型都需要上下文。上下文不能只存在 React state 里，也不能只存在某次 HTTP 请求里。它要能：
@@ -32,6 +41,34 @@ examples/teaching-agent/.teaching-agent/session.jsonl
 ```
 
 append-only 的好处是简单、稳定、崩溃友好。真实 Pi 也是这种思路。
+
+## 最小实现顺序
+
+不要一次写完整 store。按下面顺序实现，每一步都可以手动验证：
+
+```text
+1. constructor(filePath, cwd)：如果文件不存在，写 session header
+2. appendMessage(message)：生成 entry_N，parentId 指向当前 leaf
+3. pathToLeaf()：从 leaf 沿 parentId 回溯
+4. buildContext()：把当前 leaf 路径转成 AgentMessage[]
+5. reset()：删除文件并重写 header
+6. compactIfNeeded()：最后再补
+```
+
+关键 diff：
+
+```diff
++ private leafId: string | null = null;
++ private byId = new Map<string, SessionEntry>();
++
++ async appendMessage(message: AgentMessage): Promise<string> {
++   const id = this.nextId();
++   const entry = { type: "message", id, parentId: this.leafId, timestamp: new Date().toISOString(), message };
++   await this.appendEntry(entry);
++   this.leafId = id;
++   return id;
++ }
+```
 
 ## leaf 和 parentId
 
@@ -119,6 +156,20 @@ cat examples/teaching-agent/.teaching-agent/session.jsonl
 
 你应该能看到 `session`、`message`，在上下文足够长时还能看到 `compaction`。
 
+如果你是从空目录跟做，先用这个最小检查：
+
+```ts
+const store = new JsonlSessionStore(".teaching-agent/session.jsonl", process.cwd());
+await store.appendMessage(createUserMessage("hello"));
+console.log(store.buildContext().length);
+```
+
+预期输出：
+
+```text
+1
+```
+
 ## 常见错误
 
 | 错误 | 后果 |
@@ -132,3 +183,9 @@ cat examples/teaching-agent/.teaching-agent/session.jsonl
 
 把 `compactIfNeeded(1200, 8)` 中的 `1200` 改成 `300`，更容易触发压缩。观察前端 Event Timeline 里是否出现 `compaction`。
 
+## 本节 checkpoint
+
+```bash
+git add src/server/agent/sessionStore.ts .gitignore
+git commit -m "step 4: add jsonl session store"
+```

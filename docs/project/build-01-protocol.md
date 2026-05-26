@@ -8,6 +8,14 @@
 examples/teaching-agent/src/shared/protocol.ts
 ```
 
+## 本节新增文件
+
+```text
+src/shared/protocol.ts
+```
+
+如果你从空目录跟做，这一步只写共享类型，不写任何业务逻辑。写完后，前端和后端都可以 import 同一套协议。
+
 ## 这一步解决什么问题
 
 如果没有共享协议，你很容易写出这种系统：
@@ -36,6 +44,99 @@ export type ToolCallContent = {
 ```
 
 这两个 content block 是关键：assistant message 里可以同时有文本和工具调用。
+
+## 可复制的最小完整代码
+
+先把 `src/shared/protocol.ts` 写成下面这样。它已经覆盖后续 Step 需要的消息、工具、事件、session entry 和 API response。
+
+```ts
+export type TextContent = { type: "text"; text: string };
+
+export type ToolCallContent = {
+  type: "toolCall";
+  id: string;
+  name: string;
+  arguments: Record<string, unknown>;
+};
+
+export type Usage = {
+  input: number;
+  output: number;
+  totalTokens: number;
+};
+
+export type UserMessage = {
+  role: "user";
+  content: TextContent[];
+  timestamp: number;
+};
+
+export type AssistantMessage = {
+  role: "assistant";
+  content: Array<TextContent | ToolCallContent>;
+  stopReason: "stop" | "toolUse" | "error" | "aborted";
+  usage: Usage;
+  timestamp: number;
+  errorMessage?: string;
+};
+
+export type ToolResultMessage = {
+  role: "toolResult";
+  toolCallId: string;
+  toolName: string;
+  content: TextContent[];
+  details?: unknown;
+  isError: boolean;
+  timestamp: number;
+};
+
+export type AgentMessage = UserMessage | AssistantMessage | ToolResultMessage;
+
+export type ToolDefinition = {
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
+};
+
+export type ToolResult = {
+  content: TextContent[];
+  details?: unknown;
+  terminate?: boolean;
+};
+
+export type SessionEntry =
+  | { type: "session"; version: 1; id: string; timestamp: string; cwd: string }
+  | { type: "message"; id: string; parentId: string | null; timestamp: string; message: AgentMessage }
+  | {
+      type: "compaction";
+      id: string;
+      parentId: string | null;
+      timestamp: string;
+      summary: string;
+      firstKeptEntryId: string;
+      tokensBefore: number;
+    };
+
+export type AgentEvent =
+  | { type: "agent_start" }
+  | { type: "agent_end"; messages: AgentMessage[] }
+  | { type: "turn_start"; turn: number }
+  | { type: "turn_end"; turn: number; message: AssistantMessage; toolResults: ToolResultMessage[] }
+  | { type: "message_start"; message: AgentMessage }
+  | { type: "message_update"; message: AssistantMessage; delta: string }
+  | { type: "message_end"; message: AgentMessage }
+  | { type: "tool_execution_start"; toolCallId: string; toolName: string; args: Record<string, unknown> }
+  | { type: "tool_execution_end"; toolCallId: string; toolName: string; result: ToolResult; isError: boolean }
+  | { type: "compaction"; summary: string; tokensBefore: number; firstKeptEntryId: string };
+
+export type SessionResponse = {
+  sessionId: string;
+  messages: AgentMessage[];
+  events: AgentEvent[];
+  tools: ToolDefinition[];
+  entries: SessionEntry[];
+};
+```
 
 ```ts
 export type AgentMessage =
@@ -139,6 +240,27 @@ npm run typecheck
 
 没有类型错误就说明共享协议能被前后端同时引用。
 
+如果你在自己的空目录跟做，命令就是：
+
+```bash
+npm run typecheck
+```
+
+## 常见报错
+
+| 报错 | 原因 | 处理 |
+| --- | --- | --- |
+| `Cannot find module "../shared/protocol"` | 后续文件引用路径不对 | 从 `src/server/*` 到 shared 通常是 `../shared` 或 `../../shared` |
+| `Type instantiation is excessively deep` | 类型写得过度泛型化 | 教学版先用普通 union type，不要急着抽象 |
+| 前端和后端类型不一致 | 各自复制了一份类型 | 只保留 `src/shared/protocol.ts` 这一份 |
+
+## 本节 checkpoint
+
+```bash
+git add src/shared/protocol.ts
+git commit -m "step 1: add shared agent protocol"
+```
+
 ## 常见错误
 
 | 错误 | 后果 |
@@ -151,4 +273,3 @@ npm run typecheck
 ## 小练习
 
 给 `AssistantMessage` 增加一个可选 `debug?: string` 字段，然后观察哪些文件会被 TypeScript 提示影响。这个练习能帮你感受共享协议的“向外扩散半径”。
-

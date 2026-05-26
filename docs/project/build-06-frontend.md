@@ -9,6 +9,18 @@ examples/teaching-agent/src/client/App.tsx
 examples/teaching-agent/src/client/styles.css
 ```
 
+## 本节新增文件
+
+```text
+index.html
+src/client/main.tsx
+src/client/App.tsx
+src/client/styles.css
+public/favicon.svg
+```
+
+本节的目标不是做一个花哨 UI，而是让 Agent 内部状态可观察：消息、工具、事件都要看得见。
+
 ## 页面结构
 
 ```mermaid
@@ -51,6 +63,51 @@ setSession(await response.json());
 ```
 
 教学版没有做 streaming UI，因为后端当前是一次性返回事件数组。但事件结构已经和 streaming UI 兼容，后面可以替换成 SSE 或 WebSocket。
+
+## 最小可运行页面
+
+先写 `src/client/main.tsx`：
+
+```tsx
+import { createRoot } from "react-dom/client";
+import { App } from "./App";
+import "./styles.css";
+
+createRoot(document.getElementById("root")!).render(<App />);
+```
+
+再写一个最小 `App`：
+
+```tsx
+export function App() {
+  const [session, setSession] = useState<SessionResponse>(EMPTY_SESSION);
+  const [input, setInput] = useState("列出工作区文件");
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    const response = await fetch("/api/prompt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: input }),
+    });
+    setSession(await response.json());
+  }
+
+  return (
+    <main>
+      {session.messages.map((message, index) => (
+        <pre key={index}>{JSON.stringify(message, null, 2)}</pre>
+      ))}
+      <form onSubmit={submit}>
+        <input value={input} onChange={(event) => setInput(event.target.value)} />
+        <button>发送</button>
+      </form>
+    </main>
+  );
+}
+```
+
+等数据流跑通后，再替换成仓库里的精致版组件：`MessageCard`、`ToolCard`、`Event Timeline`。
 
 ## MessageCard
 
@@ -120,6 +177,15 @@ http://localhost:5174/
 
 你应该能看到工具调用卡片和事件时间线同步变化。
 
+预期页面至少能显示：
+
+```text
+user: 列出工作区文件
+assistant: list_files toolCall
+tool:list_files: README.md / agent-notes.md
+assistant: 我已经列出工作区文件...
+```
+
 ## 常见错误
 
 | 错误 | 后果 |
@@ -133,3 +199,9 @@ http://localhost:5174/
 
 给 `ToolCallBlock` 增加一个折叠按钮，默认只显示工具名，展开后显示 JSON 参数。这个练习能让你处理真实 Agent UI 里常见的“结构化内容太长”问题。
 
+## 本节 checkpoint
+
+```bash
+git add index.html src/client public
+git commit -m "step 6: add teaching agent ui"
+```

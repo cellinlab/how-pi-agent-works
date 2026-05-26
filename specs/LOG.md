@@ -379,3 +379,21 @@
 - 验证：
   - `npm run docs:build` 成功。
   - Mermaid sequence diagram parser 检查 9 个图，全部通过。
+
+### 21. 从零实现工程手册补强
+
+- 更新 `docs/project/build-00-roadmap.md`：
+  - 增加从空目录创建项目的命令。
+  - 增加最小 `package.json`、`tsconfig.json`、`vite.config.ts`。
+  - 增加示例 workspace 文件创建命令。
+  - 增加“跟做版本 vs 完整仓库版本”提示和阶段 checkpoint 建议。
+- 更新 Step 1 到 Step 7：
+  - 每个主要实现页补“本节新增文件”。
+  - 补可复制代码、局部 diff 或最小可运行骨架。
+  - 补运行命令、预期输出、常见报错和 checkpoint。
+  - Step 7 增加跟做验收清单和常见报错原文定位表。
+- 目的：
+  - 让本科毕业生读者不只是理解现有代码，而是知道从空目录要新建哪些文件、写哪些代码、跑哪些命令、看到什么结果。
+- 验证：
+  - `npm run docs:build` 成功。
+  - `git diff --check` 成功。

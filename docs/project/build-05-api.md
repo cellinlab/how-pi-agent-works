@@ -8,6 +8,14 @@
 examples/teaching-agent/src/server/index.ts
 ```
 
+## 本节新增文件
+
+```text
+src/server/index.ts
+```
+
+如果你还没有前端，也可以只跑 API。本节完成后，Agent 已经可以通过 HTTP 工作。
+
 ## 三个接口
 
 | 方法 | 路径 | 作用 |
@@ -60,6 +68,48 @@ for (const message of result.newMessages) {
 
 这个顺序有一个细节：用户消息先进入 store，再构建上下文。否则模型看不到当前输入。
 
+## 最小 API 骨架
+
+```ts
+import express from "express";
+
+const app = express();
+app.use(express.json());
+
+app.get("/api/session", (_req, res) => {
+  res.json(createResponse());
+});
+
+app.post("/api/prompt", async (req, res) => {
+  const input = typeof req.body?.text === "string" ? req.body.text.trim() : "";
+  if (!input) {
+    res.status(400).json({ error: "text is required" });
+    return;
+  }
+
+  const userMessage = createUserMessage(input);
+  await store.appendMessage(userMessage);
+
+  const result = await runAgentLoop({
+    systemPrompt,
+    messages: store.buildContext(),
+    tools: toolRegistry.definitions(),
+    model,
+    toolRegistry,
+  });
+
+  for (const message of result.newMessages) {
+    await store.appendMessage(message);
+  }
+
+  res.json(createResponse());
+});
+
+app.listen(4317);
+```
+
+完整文件还会处理 reset、eventLog 和 compaction。跟做时先让 `/api/prompt` 能返回消息，再补这些增强项。
+
 ## systemPrompt
 
 教学版 system prompt 很短：
@@ -102,6 +152,8 @@ curl -X POST http://localhost:4317/api/prompt \
 - `messages`：user、assistant toolCall、toolResult、assistant final。
 - `events`：turn、message、tool execution。
 
+如果 `curl` 返回 `Cannot POST /api/prompt`，通常是 Express 没启动，或者你启动的是 Vite 前端端口而不是 API 端口。
+
 ## 常见错误
 
 | 错误 | 后果 |
@@ -114,3 +166,10 @@ curl -X POST http://localhost:4317/api/prompt \
 ## 小练习
 
 给 `/api/session` 返回一个 `contextPreview` 字段，内容是 `store.buildContext()` 的消息数量和最后一条消息角色。这个练习能帮你调试“模型到底看到了什么”。
+
+## 本节 checkpoint
+
+```bash
+git add src/server/index.ts
+git commit -m "step 5: expose teaching agent api"
+```
