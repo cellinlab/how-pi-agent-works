@@ -203,6 +203,8 @@ function summarizeEvents(events: AgentEvent[]): string[] {
         return `tool_start: ${event.toolName}`;
       case "tool_execution_end":
         return `tool_end: ${event.toolName}${event.isError ? " error" : ""}`;
+      case "tool_permission":
+        return `tool_permission ${event.action}: ${event.toolName}${event.reason ? ` (${event.reason})` : ""}`;
       case "agent_end":
         return `agent_end: ${event.messages.length} new messages`;
       case "compaction":

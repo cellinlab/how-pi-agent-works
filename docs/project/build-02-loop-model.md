@@ -14,6 +14,7 @@ examples/teaching-agent/src/server/agent/message.ts
 
 ```text
 src/server/agent/message.ts
+src/server/agent/model.ts
 src/server/agent/mockModel.ts
 src/server/agent/loop.ts
 ```
@@ -51,19 +52,23 @@ export function messageText(message: AgentMessage): string {
 }
 ```
 
-## 再写 MockModel 的最小版本
+## 再写模型接口和 MockModel 的最小版本
 
 ```ts
 import type { AgentMessage, AssistantMessage, ToolDefinition } from "../../shared/protocol";
 import { createAssistantMessage, messageText, text } from "./message";
 
-type CompleteInput = {
+export type CompleteInput = {
   systemPrompt: string;
   messages: AgentMessage[];
   tools: ToolDefinition[];
 };
 
-export class MockModel {
+export interface TeachingModel {
+  complete(input: CompleteInput): Promise<AssistantMessage>;
+}
+
+export class MockModel implements TeachingModel {
   async complete(input: CompleteInput): Promise<AssistantMessage> {
     const last = input.messages[input.messages.length - 1];
     if (!last) return createAssistantMessage([text("还没有上下文。")]);
@@ -86,6 +91,8 @@ export class MockModel {
 
 这不是“智能模型”，它只是稳定地产生 tool call。稳定性正是教学阶段需要的。
 
+真实仓库里接口放在 `model.ts`，`MockModel` 放在 `mockModel.ts`。教程这里合在一个代码块里展示，是为了让你先看清边界：loop 依赖的是 `TeachingModel` 接口，不是某个具体 provider。
+
 ## 为什么先用 MockModel
 
 真实模型会引入很多额外变量：API Key、网络、provider tool call 格式、流式事件、速率限制。教学版先用确定性 `MockModel`，让你专注 Agent Loop。
@@ -106,9 +113,10 @@ type RunAgentLoopOptions = {
   systemPrompt: string;
   messages: AgentMessage[];
   tools: ToolDefinition[];
-  model: MockModel;
+  model: TeachingModel;
   toolRegistry: ToolRegistry;
   maxTurns?: number;
+  beforeToolCall?: BeforeToolCall;
   onEvent?: (event: AgentEvent) => void;
 };
 ```
@@ -125,6 +133,8 @@ type RunAgentLoopOptions = {
 ```
 
 为什么不直接返回完整 session？因为 loop 不应该知道会话文件、HTTP 响应和前端状态。它只做状态转换。
+
+`beforeToolCall` 是工具执行前的权限 hook。第一版可以先不实现，等 loop 跑通后再加；完整仓库已经实现了 `allow`、`block` 和 `rewrite` 三种决策。
 
 ## 主循环
 

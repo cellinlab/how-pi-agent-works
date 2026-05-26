@@ -65,6 +65,8 @@ export interface TeachingModel {
 
 Pi 的 `pi-ai` 就是在做这件事：把 provider 输入输出整理成统一消息和事件，让 Agent Loop 只关心“assistant 是否请求工具、工具结果如何回写、什么时候停止”。
 
+当前教学版已经抽出了 `TeachingModel` 接口，`MockModel` 只是这个接口的一个实现。
+
 推荐你先读 [可选：接入 OpenAI-compatible 模型](/project/build-08-real-model)，再考虑把 Demo 5 的 adapter 移进教学版后端。
 
 ## 2. 工具权限模型：确认、拦截、参数改写
@@ -110,6 +112,8 @@ const result = await toolRegistry.execute(toolCall.name, args);
 | `confirm` | 暂停 run，前端弹出确认，再继续 |
 
 第一版可以只做 `allow/block/rewrite`，把 `confirm` 留到有 SSE 之后。因为确认需要后端 run 暂停、前端回复、再恢复执行，比普通同步 hook 多一个运行态。
+
+当前教学版已经实现了 `allow/block/rewrite` 的最小版本：`write_note` 写入包含 `secret` 或 `秘密` 的文件名会被 block，`list_files` 缺少 `path` 时会被 rewrite 成 `"."`。
 
 常见规则：
 
@@ -255,8 +259,8 @@ Agent 工程的难点不在 happy path，而在这些边界：
 
 ## 6. 推荐实现顺序
 
-1. 抽出 `TeachingModel` 接口，让 `MockModel` 和真实 adapter 都实现它。
-2. 给 `runAgentLoop()` 加 `beforeToolCall`，先支持 `allow/block/rewrite`。
+1. 抽出 `TeachingModel` 接口，让 `MockModel` 和真实 adapter 都实现它。（已在教学版实现）
+2. 给 `runAgentLoop()` 加 `beforeToolCall`，先支持 `allow/block/rewrite`。（已在教学版实现）
 3. 把 `POST /api/prompt` 改成 `POST /api/runs` + SSE events。
 4. 前端把一次性消息列表改成增量消息状态。
 5. 暴露 `/api/branch`，做最小会话树 UI。

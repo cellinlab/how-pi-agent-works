@@ -7,6 +7,7 @@
 | 文件 | 作用 |
 | --- | --- |
 | `src/shared/protocol.ts` | 共享消息、事件、工具类型 |
+| `src/server/agent/model.ts` | 教学版模型接口，隔离 MockModel 和未来真实模型 adapter |
 | `src/server/agent/mockModel.ts` | 确定性假模型，模拟 tool call 和最终回答 |
 | `src/server/agent/tools.ts` | 工具注册表和内置工具 |
 | `src/server/agent/sessionStore.ts` | JSONL 会话树 |
@@ -22,6 +23,8 @@ type RunContext = {
   systemPrompt: string;
   messages: AgentMessage[];
   tools: ToolDefinition[];
+  model: TeachingModel;
+  beforeToolCall?: BeforeToolCall;
 };
 ```
 
@@ -38,6 +41,16 @@ type RunResult = {
 
 这个设计和 Pi 的 `runAgentLoop` 一样：loop 本身不关心 HTTP，也不直接操作 React UI，更不会直接写 session 文件。教学版里，持久化发生在 `src/server/index.ts`：API 调用 `runAgentLoop()` 后，再把 `result.newMessages` 逐条交给 `store.appendMessage()`。
 
+`TeachingModel` 是为了让 loop 不依赖某个具体模型类：
+
+```ts
+export interface TeachingModel {
+  complete(input: CompleteInput): Promise<AssistantMessage>;
+}
+```
+
+现在实现它的是 `MockModel`。未来如果接入 OpenAI-compatible adapter，只要 adapter 也返回教学版 `AssistantMessage`，loop、工具和会话存储都不用重写。
+
 ## 工具注册表
 
 教学版工具只有三个：
@@ -49,6 +62,18 @@ type RunResult = {
 | `write_note` | 写入 `workspace/notes/` 下的笔记 |
 
 所有路径都会被限制在 `workspace/` 里。这是一个很重要的安全习惯：哪怕是教学项目，也不要让模型参数直接访问任意路径。
+
+## 工具权限 hook
+
+工具真正执行前会先经过 `beforeToolCall`。教学版支持三种决策：
+
+| 决策 | 作用 |
+| --- | --- |
+| `allow` | 直接执行工具 |
+| `block` | 不执行工具，生成 `isError: true` 的 tool result |
+| `rewrite` | 改写参数后再执行工具 |
+
+默认规则很小：`write_note` 不允许写入包含 `secret` 或 `秘密` 的笔记文件；`list_files` 如果缺少 `path`，会补成 `"."`。这不是完整权限系统，但足够让你看到 Pi 里 tool hook 的工程意义：模型提出工具调用，本地运行时仍然有最后的审批权。
 
 ## 会话存储
 

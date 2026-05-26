@@ -6,17 +6,25 @@ import type {
   ToolDefinition,
   ToolResultMessage,
 } from "../../shared/protocol";
-import { MockModel } from "./mockModel";
 import { text } from "./message";
+import type { TeachingModel } from "./model";
 import type { ToolRegistry } from "./tools";
+
+export type ToolDecision =
+  | { action: "allow"; reason?: string }
+  | { action: "block"; reason: string }
+  | { action: "rewrite"; args: Record<string, unknown>; reason?: string };
+
+export type BeforeToolCall = (call: ToolCallContent) => Promise<ToolDecision> | ToolDecision;
 
 type RunAgentLoopOptions = {
   systemPrompt: string;
   messages: AgentMessage[];
   tools: ToolDefinition[];
-  model: MockModel;
+  model: TeachingModel;
   toolRegistry: ToolRegistry;
   maxTurns?: number;
+  beforeToolCall?: BeforeToolCall;
   onEvent?: (event: AgentEvent) => void;
 };
 
@@ -62,20 +70,44 @@ export async function runAgentLoop(options: RunAgentLoopOptions): Promise<{
 
     const toolResults: ToolResultMessage[] = [];
     for (const toolCall of toolCalls) {
+      const decision = await decideToolCall(toolCall, options.beforeToolCall);
+      if (decision.action !== "allow") {
+        emit({
+          type: "tool_permission",
+          toolCallId: toolCall.id,
+          toolName: toolCall.name,
+          action: decision.action,
+          reason: decision.reason,
+          originalArgs: toolCall.arguments,
+          args: decision.action === "rewrite" ? decision.args : toolCall.arguments,
+        });
+      }
+
+      if (decision.action === "block") {
+        const blockedResult = createBlockedToolResult(toolCall, decision.reason);
+        toolResults.push(blockedResult);
+        context.push(blockedResult);
+        newMessages.push(blockedResult);
+        emitMessageLifecycle(blockedResult, emit);
+        continue;
+      }
+
+      const executableToolCall =
+        decision.action === "rewrite" ? { ...toolCall, arguments: decision.args } : toolCall;
       emit({
         type: "tool_execution_start",
-        toolCallId: toolCall.id,
-        toolName: toolCall.name,
-        args: toolCall.arguments,
+        toolCallId: executableToolCall.id,
+        toolName: executableToolCall.name,
+        args: executableToolCall.arguments,
       });
-      const toolResult = await executeToolCall(toolCall, options.toolRegistry);
+      const toolResult = await executeToolCall(executableToolCall, options.toolRegistry);
       toolResults.push(toolResult);
       context.push(toolResult);
       newMessages.push(toolResult);
       emit({
         type: "tool_execution_end",
-        toolCallId: toolCall.id,
-        toolName: toolCall.name,
+        toolCallId: executableToolCall.id,
+        toolName: executableToolCall.name,
         result: {
           content: toolResult.content,
           details: toolResult.details,
@@ -93,6 +125,25 @@ export async function runAgentLoop(options: RunAgentLoopOptions): Promise<{
   emitMessageLifecycle(guardrail, emit);
   emit({ type: "agent_end", messages: newMessages });
   return { newMessages, events };
+}
+
+async function decideToolCall(
+  toolCall: ToolCallContent,
+  beforeToolCall: BeforeToolCall | undefined,
+): Promise<ToolDecision> {
+  return beforeToolCall ? await beforeToolCall(toolCall) : { action: "allow" };
+}
+
+function createBlockedToolResult(toolCall: ToolCallContent, reason: string): ToolResultMessage {
+  return {
+    role: "toolResult",
+    toolCallId: toolCall.id,
+    toolName: toolCall.name,
+    content: [text(`Tool call blocked: ${reason}`)],
+    details: { blocked: true, reason },
+    isError: true,
+    timestamp: Date.now(),
+  };
 }
 
 async function executeToolCall(

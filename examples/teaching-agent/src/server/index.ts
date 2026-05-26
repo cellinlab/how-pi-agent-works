@@ -1,6 +1,7 @@
 import express from "express";
 import { resolve } from "node:path";
 import type { AgentEvent, SessionResponse } from "../shared/protocol";
+import type { BeforeToolCall, ToolDecision } from "./agent/loop";
 import { runAgentLoop } from "./agent/loop";
 import { createUserMessage } from "./agent/message";
 import { MockModel } from "./agent/mockModel";
@@ -64,6 +65,7 @@ app.post("/api/prompt", async (req, res) => {
     tools: toolRegistry.definitions(),
     model,
     toolRegistry,
+    beforeToolCall,
   });
 
   for (const message of result.newMessages) {
@@ -85,4 +87,19 @@ function createResponse(): SessionResponse {
     tools: toolRegistry.definitions(),
     entries: store.getEntries(),
   };
+}
+
+function beforeToolCall(call: Parameters<BeforeToolCall>[0]): ToolDecision {
+  if (call.name === "write_note") {
+    const fileName = typeof call.arguments.fileName === "string" ? call.arguments.fileName : "";
+    if (/secret|秘密/i.test(fileName)) {
+      return { action: "block", reason: "教学版权限策略：不允许写入包含 secret/秘密 的笔记文件。" };
+    }
+  }
+
+  if (call.name === "list_files" && typeof call.arguments.path !== "string") {
+    return { action: "rewrite", args: { ...call.arguments, path: "." }, reason: "补齐默认目录参数。" };
+  }
+
+  return { action: "allow" };
 }

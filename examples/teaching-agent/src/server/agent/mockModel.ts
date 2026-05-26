@@ -1,13 +1,8 @@
-import type { AgentMessage, AssistantMessage, ToolDefinition, ToolResultMessage } from "../../shared/protocol";
+import type { AssistantMessage, ToolResultMessage } from "../../shared/protocol";
 import { createAssistantMessage, messageText, text } from "./message";
+import type { CompleteInput, TeachingModel } from "./model";
 
-type CompleteInput = {
-  systemPrompt: string;
-  messages: AgentMessage[];
-  tools: ToolDefinition[];
-};
-
-export class MockModel {
+export class MockModel implements TeachingModel {
   async complete(input: CompleteInput): Promise<AssistantMessage> {
     const last = input.messages[input.messages.length - 1];
     if (!last) {
@@ -52,6 +47,7 @@ export class MockModel {
     }
 
     if (this.includesAny(userText, ["写", "笔记", "note", "保存"])) {
+      const fileName = this.includesAny(userText, ["secret", "秘密"]) ? "secret-note.md" : "agent-loop-note.md";
       return createAssistantMessage(
         [
           {
@@ -59,7 +55,7 @@ export class MockModel {
             id: `call_${Date.now()}_write`,
             name: "write_note",
             arguments: {
-              fileName: "agent-loop-note.md",
+              fileName,
               content:
                 "Agent Loop = context -> model -> tool execution -> tool result -> next model request.",
             },

@@ -341,6 +341,59 @@ Pi 的真实系统可以按三层理解：
   - `npm run teaching-agent:test` 通过。
   - `git diff --check` 通过。
 
+## 第三轮工程增强计划
+
+用户要求继续后续计划实现。本轮把 `docs/project/extend.md` 中的推荐扩展路线逐步落到教学版 Agent 代码里，但仍保持“教学版可理解、可运行”的范围，不追求完整生产级 Pi 复刻。
+
+### Commit 18：模型接口与工具权限 hook（已完成）
+
+- 抽出 `TeachingModel` 接口，让 `MockModel` 不再作为 `runAgentLoop()` 的硬编码类型。
+- 在 Agent Loop 中加入 `beforeToolCall` hook，支持：
+  - `allow`：直接执行。
+  - `block`：生成 `isError: true` 的 `toolResult`。
+  - `rewrite`：用改写后的参数执行工具。
+- 增加工具权限事件，便于前端 Event Timeline 展示拦截和改写。
+- 给测试补覆盖：
+  - 被 block 的工具不会执行。
+  - rewrite 后执行新参数。
+- 更新对应教程说明。
+- 验收：
+  - `npm run teaching-agent:test` 通过。
+  - `npm run teaching-agent:typecheck` 通过。
+  - `npm run docs:build` 通过。
+
+### Commit 19：SSE 流式事件 API 与前端增量 UI（待开始）
+
+- 新增 `POST /api/runs` 和 `GET /api/runs/:runId/events`。
+- 保留 `POST /api/prompt` 作为一次性返回兼容接口。
+- React 前端改为优先使用 SSE：
+  - 先创建 run。
+  - 再订阅事件流。
+  - 根据 `message_start/update/end`、`tool_execution_start/end` 增量刷新 UI。
+- 增加运行状态与错误收尾。
+- 更新文档与验证。
+
+### Commit 20：最小会话树 UI 与 branch endpoint（待开始）
+
+- 在 `JsonlSessionStore` 中暴露安全的 leaf 切换方法。
+- 新增 `POST /api/branch`，允许从已有 entry 继续。
+- React 侧栏新增 Session Tree：
+  - 按 `id` / `parentId` 构建树。
+  - 高亮当前 leaf。
+  - 点击节点切换上下文。
+- 保持 branch summary 作为文档进阶，不在本阶段实现复杂摘要。
+- 更新文档与验证。
+
+### Commit 21：第三轮最终验证（待开始）
+
+- 运行文档、Demo、测试、typecheck、build。
+- 启动教学版 Agent，验证：
+  - 权限 hook 拦截/改写。
+  - SSE 事件流。
+  - 会话树点击分支。
+  - 桌面与移动视口。
+- 清理临时产物，更新 `specs/LOG.md`。
+
 ## 历史计划：内容补强收口（已完成并归档）
 
 以下计划来自早期内容补强阶段，已经由后续 Commit 1-4 以及 Commit 5-16 逐步完成。保留它是为了追溯任务演进，不再作为待执行计划。

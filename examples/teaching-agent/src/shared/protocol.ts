@@ -96,6 +96,15 @@ export type AgentEvent =
       result: ToolResult;
       isError: boolean;
     }
+  | {
+      type: "tool_permission";
+      toolCallId: string;
+      toolName: string;
+      action: "allow" | "block" | "rewrite";
+      reason?: string;
+      originalArgs: Record<string, unknown>;
+      args: Record<string, unknown>;
+    }
   | { type: "compaction"; summary: string; tokensBefore: number; firstKeptEntryId: string };
 
 export type SessionResponse = {

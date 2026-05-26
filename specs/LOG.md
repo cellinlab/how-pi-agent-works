@@ -538,3 +538,33 @@
   - `npm run docs:build` 成功。
   - `npm run teaching-agent:test` 成功，7 个测试通过。
   - `git diff --check` 成功。
+
+### 28. 模型接口与工具权限 hook
+
+- 新增 `examples/teaching-agent/src/server/agent/model.ts`：
+  - 抽出 `TeachingModel` 和 `CompleteInput`。
+  - `runAgentLoop()` 不再硬编码 `MockModel` 类型。
+- 更新 `MockModel`：
+  - 实现 `TeachingModel`。
+  - 当用户输入包含 `secret` 或 `秘密` 并请求写笔记时，会生成 `secret-note.md`，用于演示权限拦截。
+- 更新 `runAgentLoop()`：
+  - 新增 `beforeToolCall` hook。
+  - 支持 `allow`、`block`、`rewrite` 三类决策。
+  - block 时不会执行工具，会生成 `isError: true` 的 `toolResult`。
+  - rewrite 时会用新参数执行工具。
+  - 新增 `tool_permission` 事件，供前端 Event Timeline 展示。
+- 更新默认后端策略：
+  - `write_note` 文件名包含 `secret` 或 `秘密` 时 block。
+  - `list_files` 缺少 `path` 时 rewrite 为 `"."`。
+- 更新前端和文档：
+  - Event Timeline 展示 `tool_permission`。
+  - 后端实现、测试章节、Step 2 和扩展方向页同步说明 `TeachingModel` 与 `beforeToolCall`。
+- 测试：
+  - 新增 block 用例，确认工具未执行且返回错误 toolResult。
+  - 新增 rewrite 用例，确认 registry 收到改写后的参数。
+- 验证：
+  - `npm run teaching-agent:test` 成功，9 个测试通过。
+  - `npm run teaching-agent:typecheck` 成功。
+  - `npm run teaching-agent:build` 成功。
+  - `npm run docs:build` 成功。
+  - `git diff --check` 成功。
