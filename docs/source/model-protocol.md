@@ -67,18 +67,18 @@ type AssistantMessage = {
 
 ```mermaid
 sequenceDiagram
-  participant Loop as Agent Loop
+  participant AgentLoop as Agent Loop
   participant AI as pi-ai
   participant Adapter as Provider Adapter
   participant API as Remote Model API
 
-  Loop->>AI: streamSimple(context, options)
+  AgentLoop->>AI: streamSimple(context, options)
   AI->>Adapter: normalize context
   Adapter->>API: provider-specific request
   API-->>Adapter: provider-specific stream
   Adapter-->>AI: AssistantMessageEvent
-  AI-->>Loop: text/tool/thinking/error events
-  Loop->>Loop: assemble AssistantMessage
+  AI-->>AgentLoop: text/tool/thinking/error events
+  AgentLoop->>AgentLoop: assemble AssistantMessage
 ```
 
 注意这个链路里有两个方向的转换：
@@ -144,4 +144,3 @@ const assistant = await model.complete({
 ## 小练习
 
 打开 `examples/teaching-agent/src/server/agent/mockModel.ts`，给 `complete()` 增加一个分支：当用户输入包含“写笔记”时返回 `write_note` 工具调用。你会发现只要返回结构符合 `AssistantMessage`，loop 不需要知道“模型为什么这么想”。
-

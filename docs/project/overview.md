@@ -58,21 +58,21 @@ sequenceDiagram
   participant UI as React
   participant API as Express
   participant Store as JsonlSessionStore
-  participant Loop as Agent Loop
+  participant AgentLoop as Agent Loop
   participant Model as MockModel
   participant Tool as ToolRegistry
 
   UI->>API: POST /api/prompt
   API->>Store: append user message
-  API->>Loop: runAgentLoop(context)
-  Loop->>Model: complete(messages, tools)
-  Model-->>Loop: toolCall read_file
-  Loop->>Tool: execute read_file
-  Tool-->>Loop: tool result
-  Loop->>Store: append assistant + toolResult
-  Loop->>Model: complete(messages, tools)
-  Model-->>Loop: final answer
-  Loop->>Store: append assistant
+  API->>AgentLoop: runAgentLoop(context)
+  AgentLoop->>Model: complete(messages, tools)
+  Model-->>AgentLoop: toolCall read_file
+  AgentLoop->>Tool: execute read_file
+  Tool-->>AgentLoop: tool result
+  AgentLoop->>Store: append assistant + toolResult
+  AgentLoop->>Model: complete(messages, tools)
+  Model-->>AgentLoop: final answer
+  AgentLoop->>Store: append assistant
   API-->>UI: messages + events
 ```
 

@@ -81,7 +81,7 @@ sequenceDiagram
   participant UI as TUI/RPC/SDK
   participant Session as AgentSession
   participant Agent as Agent
-  participant Loop as Agent Loop
+  participant AgentLoop as Agent Loop
   participant AI as pi-ai
   participant Tool as 工具
   participant Store as SessionManager
@@ -89,12 +89,12 @@ sequenceDiagram
   UI->>Session: prompt(text)
   Session->>Session: 展开技能/模板，检查模型和认证
   Session->>Agent: prompt(messages)
-  Agent->>Loop: runAgentLoop(context, config)
-  Loop->>AI: streamSimple(model, context)
-  AI-->>Loop: message_update / toolCall
-  Loop->>Tool: execute(args)
-  Tool-->>Loop: AgentToolResult
-  Loop-->>Agent: AgentEvent
+  Agent->>AgentLoop: runAgentLoop(context, config)
+  AgentLoop->>AI: streamSimple(model, context)
+  AI-->>AgentLoop: message_update / toolCall
+  AgentLoop->>Tool: execute(args)
+  Tool-->>AgentLoop: AgentToolResult
+  AgentLoop-->>Agent: AgentEvent
   Agent-->>Session: 事件回调
   Session->>Store: appendMessage / appendToolResult
   Session-->>UI: AgentSessionEvent

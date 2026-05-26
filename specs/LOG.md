@@ -315,3 +315,23 @@
   - 已停止教学版 dev server。
   - 已删除 `docs/.vitepress/dist/`、`examples/teaching-agent/dist/`、`examples/teaching-agent/.teaching-agent/`、`.playwright-cli/`、`output/`。
   - 已确认仓库文件中不包含临时 API Key 或 token-plan endpoint。
+
+### 18. Mermaid 渲染专项检查
+
+- 用户反馈 `docs/concepts/pi-architecture.md` 中“一次请求的完整链路”图未正常渲染。
+- 定位原因：
+  - Mermaid sequence diagram 中 `loop` 是保留关键字。
+  - 多个 sequence 图使用了 `participant Loop ...`，大小写不同也会触发解析问题。
+- 修复内容：
+  - 将 sequence diagram 中的 `Loop` participant alias 统一改为 `AgentLoop`。
+  - 涉及页面：
+    - `docs/concepts/pi-architecture.md`
+    - `docs/concepts/tools.md`
+    - `docs/source/model-protocol.md`
+    - `docs/project/overview.md`
+    - `docs/project/build-05-api.md`
+- 验证内容：
+  - 使用 Mermaid parser 单独检查 9 个 sequence diagram，全部通过。
+  - 启动 VitePress dev server，用 Playwright 逐页检查 37 个文档页面。
+  - 共发现 42 个 Mermaid block，全部渲染为 SVG，`.mermaid-error` 为 0。
+  - 额外补充 VitePress favicon 配置，避免浏览器控制台出现 `/favicon.ico` 404 噪音。

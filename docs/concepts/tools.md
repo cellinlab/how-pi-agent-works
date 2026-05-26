@@ -34,24 +34,24 @@ interface AgentTool<TArgs, TResult> {
 
 ```mermaid
 sequenceDiagram
-  participant Loop as Agent Loop
+  participant AgentLoop as Agent Loop
   participant Model as LLM
   participant Hook as Hooks
   participant Tool as Tool
   participant Ctx as Context
 
-  Loop->>Model: messages + tools
-  Model-->>Loop: assistant content: toolCall
-  Loop->>Loop: find tool by name
-  Loop->>Loop: validate args
-  Loop->>Hook: beforeToolCall
-  Hook-->>Loop: allow/block
-  Loop->>Tool: execute(args)
-  Tool-->>Loop: result
-  Loop->>Hook: afterToolCall
-  Hook-->>Loop: optional override
-  Loop->>Ctx: append toolResult
-  Loop->>Model: next request
+  AgentLoop->>Model: messages + tools
+  Model-->>AgentLoop: assistant content: toolCall
+  AgentLoop->>AgentLoop: find tool by name
+  AgentLoop->>AgentLoop: validate args
+  AgentLoop->>Hook: beforeToolCall
+  Hook-->>AgentLoop: allow/block
+  AgentLoop->>Tool: execute(args)
+  Tool-->>AgentLoop: result
+  AgentLoop->>Hook: afterToolCall
+  Hook-->>AgentLoop: optional override
+  AgentLoop->>Ctx: append toolResult
+  AgentLoop->>Model: next request
 ```
 
 ## 为什么要有 before/after hooks

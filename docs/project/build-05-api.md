@@ -25,14 +25,14 @@ sequenceDiagram
   participant UI as React
   participant API as Express
   participant Store as JsonlSessionStore
-  participant Loop as runAgentLoop
+  participant AgentLoop as runAgentLoop
 
   UI->>API: POST /api/prompt
   API->>Store: append user message
   API->>Store: compactIfNeeded
   API->>Store: buildContext
-  API->>Loop: runAgentLoop(context)
-  Loop-->>API: newMessages + events
+  API->>AgentLoop: runAgentLoop(context)
+  AgentLoop-->>API: newMessages + events
   API->>Store: append newMessages
   API-->>UI: SessionResponse
 ```
@@ -114,4 +114,3 @@ curl -X POST http://localhost:4317/api/prompt \
 ## 小练习
 
 给 `/api/session` 返回一个 `contextPreview` 字段，内容是 `store.buildContext()` 的消息数量和最后一条消息角色。这个练习能帮你调试“模型到底看到了什么”。
-

@@ -7,6 +7,7 @@ export default defineConfig({
   lang: "zh-CN",
   cleanUrls: true,
   lastUpdated: true,
+  head: [["link", { rel: "icon", href: "/logo.svg", type: "image/svg+xml" }]],
   markdown: {
     lineNumbers: true,
     config(md) {
