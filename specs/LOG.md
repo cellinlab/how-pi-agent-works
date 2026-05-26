@@ -163,3 +163,56 @@
   - 不扩大教学版 Agent 范围，不接真实模型 API。
   - 每个阶段单独 commit。
 - 本轮计划已同步到 `specs/PLAN.md` 的“内容补强收口计划”。
+
+### 11. 教程正文补强
+
+- 新增 `docs/source/source-map.md`，作为 Pi 源码阅读地图。
+- 更新 VitePress sidebar，将“源码阅读地图”加入源码拆解部分。
+- 补强以下章节：
+  - `docs/concepts/pi-architecture.md`：增加结构化协议流和 LLM/副作用边界。
+  - `docs/source/agent-loop.md`：增加 loop 不写磁盘的设计理由和常见误区。
+  - `docs/concepts/tools.md`：增加工具 schema 与 prompt guideline 的区别。
+  - `docs/concepts/sessions.md`：增加 session entry 类型和会话树误区。
+  - `docs/concepts/context.md`：增加压缩策略风险、Skills/Context Files/Prompt Templates 边界和误区。
+  - `docs/reference/sources.md`：记录本轮核对过的官方信息。
+- 提交：`ccf99a2 docs: expand pi architecture tutorial`。
+
+### 12. Demo 与教学项目对照补强
+
+- 新增 `docs/project/code-map.md`，说明四个 Demo 如何汇入最终 React + Node 教学版 Agent。
+- 更新 VitePress sidebar，将“Demo 到项目的映射”加入最终项目部分。
+- 更新四个 Demo 文档：
+  - 补充学习目标。
+  - 补充预期输出或最终项目映射。
+  - 保持运行命令、关键代码、小练习完整。
+- 给四个 Demo 源码增加少量教学注释，解释关键转折点。
+- 提交：`c028336 docs: connect demos to teaching app`。
+
+### 13. 内容补强验证记录
+
+- `npm run docs:build` 成功。
+  - VitePress 构建完成。
+  - 仍有 VitePress/mermaid chunk size warning，不影响构建产物。
+- Demo 验证成功：
+  - `npm run demo:01`
+  - `npm run demo:02`
+  - `npm run demo:03`
+  - `npm run demo:04`
+- 教学版 Agent 检查成功：
+  - `npm run teaching-agent:typecheck`
+  - `npm run teaching-agent:build`
+- 教学版 Agent dev 验证成功：
+  - 启动 `npm run teaching-agent:dev`。
+  - `GET /api/session` 返回 `teaching-session`、0 条消息和 3 个工具。
+  - `POST /api/prompt` 输入“列出工作区文件”，返回 4 条上下文消息，最终回答包含 `README.md` 和 `agent-notes.md`。
+- 浏览器验证成功：
+  - Playwright CLI 打开 `http://localhost:5174/`。
+  - 桌面视口可见聊天区、工具列表、事件时间线。
+  - 输入“读取 agent-notes.md”并提交，页面展示 `read_file` 工具调用、工具结果和最终回答。
+  - 切换到 390px 移动视口，页面结构正常，未发现 console error。
+- 已清理验证临时产物：
+  - `.playwright-cli/`
+  - `output/`
+  - `docs/.vitepress/dist/`
+  - `examples/teaching-agent/dist/`
+  - `examples/teaching-agent/.teaching-agent/`
