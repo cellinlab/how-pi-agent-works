@@ -29,6 +29,14 @@ Vite 会把 `/api/*` 代理到 Node API。
 
 ## 调试后端
 
+先跑一遍自动化测试：
+
+```bash
+npm run teaching-agent:test
+```
+
+它会覆盖 Agent Loop、工具安全边界和 JSONL session 恢复。更完整说明见 [测试章节](/project/testing)。
+
 如果你想单独看 API：
 
 ```bash

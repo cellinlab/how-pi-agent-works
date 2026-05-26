@@ -8,7 +8,8 @@
     "dev:server": "tsx watch src/server/index.ts",
     "dev:web": "vite --host 0.0.0.0 --port 5174",
     "build": "vite build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.4.1",

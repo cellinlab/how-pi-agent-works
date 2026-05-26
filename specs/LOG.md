@@ -436,3 +436,29 @@
 - 验证：
   - `npm run docs:build` 成功。
   - `git diff --check` 成功。
+
+### 24. 测试章节与最小测试套件
+
+- 新增根脚本与 workspace 脚本：
+  - `npm run teaching-agent:test`
+  - `npm --workspace @how-pi-agent-works/teaching-agent run test`
+- 新增最小测试套件：
+  - `examples/teaching-agent/src/server/agent/loop.test.ts`
+  - `examples/teaching-agent/src/server/agent/sessionStore.test.ts`
+  - `examples/teaching-agent/src/server/agent/tools.test.ts`
+- 覆盖本科生反馈中关心的工程边界：
+  - loop 遇到 tool call 后会继续下一轮，形成 `assistant -> toolResult -> assistant`。
+  - 工具不存在时会返回 `isError: true` 的 `toolResult`，而不是让 loop 崩溃。
+  - 最大轮次可以阻止模型无限 tool call。
+  - JSONL session 能从当前 leaf 重建上下文，并忽略兄弟分支。
+  - 简化 compaction 会记录 `firstKeptEntryId` 并重建 “summary + recent messages”。
+  - `read_file` 路径越界会被工作区安全检查拦截。
+- 新增 `docs/project/testing.md`：
+  - 讲解 Agent 项目的测试分层、关键断言、API/前端后续测试思路、常见误区和小练习。
+  - 在 VitePress sidebar、调试验收页和运行页加入测试章节入口。
+- 验证：
+  - `npm run teaching-agent:test` 成功，7 个测试通过。
+  - `npm run teaching-agent:typecheck` 成功。
+  - `npm run teaching-agent:build` 成功。
+  - `npm run docs:build` 成功。
+  - `git diff --check` 成功。

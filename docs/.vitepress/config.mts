@@ -96,6 +96,7 @@ export default defineConfig({
           { text: "Step 5：Express API", link: "/project/build-05-api" },
           { text: "Step 6：React 前端", link: "/project/build-06-frontend" },
           { text: "Step 7：调试与验收", link: "/project/build-07-debug" },
+          { text: "测试章节", link: "/project/testing" },
           { text: "可选：真实模型 Demo", link: "/project/build-08-real-model" },
           { text: "后端实现", link: "/project/backend" },
           { text: "前端实现", link: "/project/frontend" },

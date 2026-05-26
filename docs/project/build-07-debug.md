@@ -2,18 +2,22 @@
 
 一个 Agent 项目最难调试的地方，是问题可能出在很多层：前端请求、API、session、loop、模型、工具、文件系统。验收清单可以帮你快速定位。
 
+如果你想把这些验收变成可重复的自动检查，继续读 [测试：把 Agent 当工程系统保护起来](/project/testing)。
+
 ## 先跑静态检查
 
 ```bash
+npm run teaching-agent:test
 npm run teaching-agent:typecheck
 npm run teaching-agent:build
 ```
 
-如果这里失败，先不要启动浏览器。TypeScript 和 Vite build 能抓住大多数协议和前端编译问题。
+如果这里失败，先不要启动浏览器。单元测试保护 loop、tool 和 session 边界；TypeScript 和 Vite build 能抓住大多数协议和前端编译问题。
 
 如果你在自己的空目录跟做，命令是：
 
 ```bash
+npm run test
 npm run typecheck
 npm run build
 ```
@@ -22,6 +26,7 @@ npm run build
 
 | 阶段 | 命令 | 预期 |
 | --- | --- | --- |
+| 单元测试 | `npm run test` | loop、tool、session 测试通过 |
 | 协议 | `npm run typecheck` | 没有 TS 错误 |
 | 后端 API | `npm run dev:server` | 打印 `Teaching Agent API listening` |
 | 前端 | `npm run dev:web` | Vite 打印本地地址 |
