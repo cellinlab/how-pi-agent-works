@@ -29,12 +29,14 @@ type RunContext = {
 
 ```ts
 type RunResult = {
-  messages: AgentMessage[];
+  newMessages: AgentMessage[];
   events: AgentEvent[];
 };
 ```
 
-这个设计和 Pi 的 `runAgentLoop` 一样：loop 本身不关心 HTTP，也不直接操作 React UI。
+`newMessages` 只表示本次 loop 产生的新 assistant/toolResult 消息，不是完整会话。完整上下文仍由 `JsonlSessionStore.buildContext()` 构建。
+
+这个设计和 Pi 的 `runAgentLoop` 一样：loop 本身不关心 HTTP，也不直接操作 React UI，更不会直接写 session 文件。教学版里，持久化发生在 `src/server/index.ts`：API 调用 `runAgentLoop()` 后，再把 `result.newMessages` 逐条交给 `store.appendMessage()`。
 
 ## 工具注册表
 

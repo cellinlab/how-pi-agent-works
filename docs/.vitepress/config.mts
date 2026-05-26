@@ -122,7 +122,8 @@ export default defineConfig({
       { icon: "github", link: "https://github.com/earendil-works/pi" }
     ],
     editLink: {
-      pattern: "https://github.com/earendil-works/pi"
+      pattern: "https://github.com/cellinlab/how-pi-agent-works/edit/main/docs/:path",
+      text: "编辑此页"
     }
   }
 });

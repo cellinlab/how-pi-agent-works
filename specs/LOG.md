@@ -360,3 +360,22 @@
   - 教学版项目默认仍使用 `MockModel`。
   - 真实模型保持为可选 Demo 与 adapter 教学链路。
   - 不把 OAuth、完整扩展系统、生产级权限审批 UI 纳入必须实现范围。
+
+### 20. 误导性图表与命名修正
+
+- 根据本科生反馈，修正 `docs/project/overview.md`：
+  - 架构图不再画 `runAgentLoop -> JsonlSessionStore`。
+  - 时序图改为 `AgentLoop -->> API: newMessages + events`，再由 `API -> Store: append newMessages`。
+  - 与真实代码 `examples/teaching-agent/src/server/index.ts` 保持一致：API 调用 `runAgentLoop()` 后再统一持久化。
+- 修正 `docs/project/backend.md`：
+  - `RunResult` 返回字段从 `messages` 改为 `newMessages`。
+  - 增加说明：`newMessages` 只代表本次 loop 新产生的 assistant/toolResult，完整上下文由 `JsonlSessionStore.buildContext()` 构造。
+- 修正 `docs/concepts/sessions.md`：
+  - 增加 “真实 Pi 与教学版的版本号” 提示。
+  - 事实核对：Pi 官方 Session Format 文档说明当前 session header 会迁移到 v3；v2 引入 `id` / `parentId` 树结构；教学版 `version: 1` 只是教学文件格式版本。
+- 修正 `docs/.vitepress/config.mts`：
+  - `editLink.pattern` 不再指向 Pi 官方仓库。
+  - 改为本教程仓库 `cellinlab/how-pi-agent-works`。
+- 验证：
+  - `npm run docs:build` 成功。
+  - Mermaid sequence diagram parser 检查 9 个图，全部通过。

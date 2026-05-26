@@ -18,6 +18,12 @@ JSONL 的每一行都是一个独立 JSON 对象。
 {"type":"message","id":"a2","parentId":"a1","message":{"role":"assistant","content":[]}}
 ```
 
+::: tip 真实 Pi 与教学版的版本号
+Pi 官方 Session Format 文档说明当前 session header 会迁移到 `version: 3`：v1 是早期线性 entry，v2 引入 `id` / `parentId` 树结构，v3 统一了扩展消息命名。本教程的教学版协议故意使用 `version: 1`，只是表示“教学版文件格式第 1 版”，不是在复刻 Pi 的真实版本号。
+
+两者的学习主线是一致的：稳定 `id`、`parentId`、当前 `leafId`，以及通过 JSONL append 保存历史。
+:::
+
 它的好处是：
 
 | 优点 | 解释 |

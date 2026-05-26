@@ -34,6 +34,7 @@ flowchart TB
     Model["MockModel"]
     Tools["ToolRegistry"]
     Store["JsonlSessionStore"]
+    Events["AgentEvent[]"]
   end
 
   subgraph Workspace["教学工作区"]
@@ -42,11 +43,13 @@ flowchart TB
   end
 
   Chat --> API
+  API --> Store
   API --> Loop
   Loop --> Model
   Loop --> Tools
   Tools --> Workspace
-  Loop --> Store
+  Loop --> Events
+  Events --> API
   API --> Timeline
   API --> Inspector
 ```
@@ -64,15 +67,16 @@ sequenceDiagram
 
   UI->>API: POST /api/prompt
   API->>Store: append user message
+  API->>Store: buildContext()
   API->>AgentLoop: runAgentLoop(context)
   AgentLoop->>Model: complete(messages, tools)
   Model-->>AgentLoop: toolCall read_file
   AgentLoop->>Tool: execute read_file
   Tool-->>AgentLoop: tool result
-  AgentLoop->>Store: append assistant + toolResult
   AgentLoop->>Model: complete(messages, tools)
   Model-->>AgentLoop: final answer
-  AgentLoop->>Store: append assistant
+  AgentLoop-->>API: newMessages + events
+  API->>Store: append newMessages
   API-->>UI: messages + events
 ```
 
