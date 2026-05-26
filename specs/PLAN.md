@@ -222,7 +222,7 @@ Pi 的真实系统可以按三层理解：
   - 每个 Step 页面都能回答“我要新建哪些文件、写什么代码、跑什么命令、看到什么结果”。
   - `npm run docs:build` 通过。
 
-### Commit 12：补 provider adapter 与真实模型教学链路（待开始）
+### Commit 12：补 provider adapter 与真实模型教学链路（已完成）
 
 - 新增或扩展真实模型 adapter 章节，重点不是 smoke test，而是协议转换：
   - OpenAI-compatible `tool_calls` -> 教学版 `AssistantMessage.content[]`。

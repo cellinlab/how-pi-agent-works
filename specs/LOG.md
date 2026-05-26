@@ -397,3 +397,25 @@
 - 验证：
   - `npm run docs:build` 成功。
   - `git diff --check` 成功。
+
+### 22. Provider adapter 与真实模型教学链路
+
+- 更新 `examples/demos/05-openai-compatible.ts`：
+  - 增加 `toTeachingAssistantMessage()`，把 OpenAI-compatible assistant message 转成教学版 `AssistantMessage`。
+  - 转换 `tool_calls[].function.name/arguments` 为 `ToolCallContent`。
+  - 根据 `finish_reason === "tool_calls"` 或 tool call 数量设置 `stopReason: "toolUse"`。
+  - 继续保持无环境变量时打印用法并跳过。
+- 更新 `docs/project/build-08-real-model.md`：
+  - 说明 adapter 的职责：provider 字段只在 adapter 中出现，Agent Loop 只看统一协议。
+  - 增加非流式转换表、`toolResult` 回传 provider 的格式、流式 delta 拼接方式、错误和 abort 收尾策略。
+  - 对照 Pi SDK 的 `AgentSession` 职责，强调模型状态、消息历史、压缩和事件流属于运行层。
+- 更新 `docs/demos/05-real-model.md`：
+  - 增加 adapter 函数讲解。
+  - 说明 4 轮 tool call guardrail 的意义。
+- 事实核对：
+  - Pi 官方 SDK 将 `AgentSession` 作为生命周期、消息历史、模型状态、压缩和事件流管理入口。
+  - Pi 的 `pi-ai` 层统一 provider 消息、工具和流式事件，避免 provider 差异进入 Agent Loop。
+- 验证：
+  - `npm run demo:05` 无环境变量路径成功跳过。
+  - `npm run teaching-agent:typecheck` 成功。
+  - `npm run docs:build` 成功。

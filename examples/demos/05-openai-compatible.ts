@@ -1,5 +1,6 @@
 import { readdir } from "node:fs/promises";
 import { relative, resolve } from "node:path";
+import type { AssistantMessage, ToolCallContent } from "../teaching-agent/src/shared/protocol";
 
 type ChatMessage =
   | { role: "system" | "user"; content: string }
@@ -17,6 +18,7 @@ type ChatMessage =
 
 type ChatCompletionResponse = {
   choices?: Array<{
+    finish_reason?: string | null;
     message?: {
       role: "assistant";
       content?: string | null;
@@ -74,10 +76,13 @@ const messages: ChatMessage[] = [
 console.log("[demo:05] requesting model:", model);
 for (let turn = 1; turn <= 4; turn++) {
   const response = await chat(messages);
-  const assistant = response.choices?.[0]?.message;
+  const choice = response.choices?.[0];
+  const assistant = choice?.message;
   if (!assistant) {
     throw new Error(`No assistant message returned: ${JSON.stringify(response.error ?? response)}`);
   }
+
+  const teachingAssistant = toTeachingAssistantMessage(assistant, choice?.finish_reason);
 
   messages.push({
     role: "assistant",
@@ -86,14 +91,15 @@ for (let turn = 1; turn <= 4; turn++) {
     tool_calls: assistant.tool_calls,
   });
 
-  if (!assistant.tool_calls?.length) {
+  const toolCalls = teachingAssistant.content.filter((block): block is ToolCallContent => block.type === "toolCall");
+  if (toolCalls.length === 0) {
     console.log("[demo:05] final answer:");
     console.log(assistant.content ?? assistant.reasoning_content ?? "(empty)");
     process.exit(0);
   }
 
-  for (const call of assistant.tool_calls) {
-    const toolOutput = await executeLocalTool(call.function.name, call.function.arguments);
+  for (const call of toolCalls) {
+    const toolOutput = await executeLocalTool(call.name, JSON.stringify(call.arguments));
     messages.push({ role: "tool", tool_call_id: call.id, content: toolOutput });
   }
 }
@@ -130,6 +136,29 @@ function authHeaders(mode: string, key: string): Record<string, string> {
     return { "api-key": key };
   }
   return { Authorization: `Bearer ${key}` };
+}
+
+function toTeachingAssistantMessage(
+  message: NonNullable<NonNullable<ChatCompletionResponse["choices"]>[number]["message"]>,
+  finishReason?: string | null,
+): AssistantMessage {
+  const toolCalls: ToolCallContent[] = (message.tool_calls ?? []).map((call) => ({
+    type: "toolCall",
+    id: call.id,
+    name: call.function.name,
+    arguments: safeJsonParse(call.function.arguments),
+  }));
+
+  return {
+    role: "assistant",
+    content: [
+      ...(message.content ? [{ type: "text" as const, text: message.content }] : []),
+      ...toolCalls,
+    ],
+    stopReason: finishReason === "tool_calls" || toolCalls.length > 0 ? "toolUse" : "stop",
+    usage: { input: 0, output: 0, totalTokens: 0 },
+    timestamp: Date.now(),
+  };
 }
 
 async function executeLocalTool(name: string, rawArguments: string): Promise<string> {

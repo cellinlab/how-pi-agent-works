@@ -59,6 +59,7 @@
 | Session Format 文档说明 JSONL session file、entry 类型和树结构 | 用来讲 `id` / `parentId` / `leafId` 与 compaction entry |
 | Compaction 文档说明 auto-compaction 与 branch summarization 的触发和结构 | 用来补齐会话格式与压缩链路章节 |
 | Xiaomi MiMo 文档说明 OpenAI-compatible `/chat/completions`、`api-key` header 和 `mimo-v2.5-pro` | 用来新增可选 Demo 5，但不把真实 key 写入仓库 |
+| Pi SDK 和 `pi-ai` 源码边界说明模型调用、事件、工具和会话职责分层 | 用来补充 OpenAI-compatible adapter 教学链路 |
 
 ## 最近核对记录
 
