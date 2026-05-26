@@ -283,3 +283,35 @@
   - 鉴权：`api-key` header。
   - 结果：模型返回 `list_files` 工具调用，本地工具列出 `README.md` 和 `agent-notes.md`，第二轮模型给出中文总结。
   - 密钥未写入仓库、文档或日志。
+
+### 17. 最终验证与交付日志
+
+- 文档站点：
+  - `npm run docs:build` 成功。
+  - 仍有 VitePress/mermaid chunk size warning，不影响构建。
+- Demo 验证：
+  - `npm run demo:01` 成功。
+  - `npm run demo:02` 成功。
+  - `npm run demo:03` 成功。
+  - `npm run demo:04` 成功。
+  - `npm run demo:05` 在未配置环境变量时打印用法并跳过，退出成功。
+  - 使用临时 OpenAI-compatible 环境变量运行 `npm run demo:05` 成功，模型触发 `list_files` tool call，本地工具返回 `README.md` 和 `agent-notes.md`，最终模型返回中文总结。
+- 教学版 Agent：
+  - `npm run teaching-agent:typecheck` 成功。
+  - `npm run teaching-agent:build` 成功。
+  - 启动 `npm run teaching-agent:dev` 成功。
+- API 验证：
+  - `GET /api/session` 返回 `teaching-session`、空消息、三个工具和 session header。
+  - `POST /api/reset` 成功清空会话。
+  - `POST /api/prompt` 输入“列出工作区文件”，返回 user、assistant toolCall、toolResult、assistant final，JSONL entries 正常追加。
+- 浏览器验证：
+  - 使用 Playwright CLI 打开 `http://localhost:5174/`。
+  - 桌面视口可见聊天区、工具调用、工具列表和事件时间线。
+  - 输入“读取 agent-notes.md”并提交，页面展示 `read_file` tool call、toolResult 和最终回答。
+  - 切换到 390px 移动视口后页面结构仍正常。
+  - Console errors 为 0。
+- 清理：
+  - 已关闭 Playwright browser。
+  - 已停止教学版 dev server。
+  - 已删除 `docs/.vitepress/dist/`、`examples/teaching-agent/dist/`、`examples/teaching-agent/.teaching-agent/`、`.playwright-cli/`、`output/`。
+  - 已确认仓库文件中不包含临时 API Key 或 token-plan endpoint。

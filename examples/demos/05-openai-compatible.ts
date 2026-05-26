@@ -72,52 +72,33 @@ const messages: ChatMessage[] = [
 ];
 
 console.log("[demo:05] requesting model:", model);
-const first = await chat(messages);
-const assistant = first.choices?.[0]?.message;
-if (!assistant) {
-  throw new Error(`No assistant message returned: ${JSON.stringify(first.error ?? first)}`);
-}
-
-messages.push({
-  role: "assistant",
-  content: assistant.content ?? null,
-  reasoning_content: assistant.reasoning_content,
-  tool_calls: assistant.tool_calls,
-});
-
-if (!assistant.tool_calls?.length) {
-  console.log("[demo:05] model answered without tool call:");
-  console.log(assistant.content ?? "(empty)");
-  process.exit(0);
-}
-
-for (const call of assistant.tool_calls) {
-  if (call.function.name !== "list_files") {
-    messages.push({
-      role: "tool",
-      tool_call_id: call.id,
-      content: `Unsupported tool: ${call.function.name}`,
-    });
-    continue;
+for (let turn = 1; turn <= 4; turn++) {
+  const response = await chat(messages);
+  const assistant = response.choices?.[0]?.message;
+  if (!assistant) {
+    throw new Error(`No assistant message returned: ${JSON.stringify(response.error ?? response)}`);
   }
 
-  const args = safeJsonParse(call.function.arguments);
-  const path = typeof args.path === "string" ? args.path : ".";
-  const entries = await listFiles(resolve(workspaceRoot, path));
-  const output = entries.length > 0 ? entries.join("\n") : "(empty)";
-  console.log("[demo:05] local tool list_files output:");
-  console.log(output);
-  messages.push({ role: "tool", tool_call_id: call.id, content: output });
+  messages.push({
+    role: "assistant",
+    content: assistant.content ?? null,
+    reasoning_content: assistant.reasoning_content,
+    tool_calls: assistant.tool_calls,
+  });
+
+  if (!assistant.tool_calls?.length) {
+    console.log("[demo:05] final answer:");
+    console.log(assistant.content ?? assistant.reasoning_content ?? "(empty)");
+    process.exit(0);
+  }
+
+  for (const call of assistant.tool_calls) {
+    const toolOutput = await executeLocalTool(call.function.name, call.function.arguments);
+    messages.push({ role: "tool", tool_call_id: call.id, content: toolOutput });
+  }
 }
 
-const second = await chat(messages);
-const finalMessage = second.choices?.[0]?.message;
-if (!finalMessage) {
-  throw new Error(`No final assistant message returned: ${JSON.stringify(second.error ?? second)}`);
-}
-
-console.log("[demo:05] final answer:");
-console.log(finalMessage.content ?? "(empty)");
+throw new Error("Model kept requesting tools after 4 turns.");
 
 async function chat(messages: ChatMessage[]): Promise<ChatCompletionResponse> {
   const response = await fetch(`${baseUrl}/chat/completions`, {
@@ -149,6 +130,20 @@ function authHeaders(mode: string, key: string): Record<string, string> {
     return { "api-key": key };
   }
   return { Authorization: `Bearer ${key}` };
+}
+
+async function executeLocalTool(name: string, rawArguments: string): Promise<string> {
+  if (name !== "list_files") {
+    return `Unsupported tool: ${name}`;
+  }
+
+  const args = safeJsonParse(rawArguments);
+  const path = typeof args.path === "string" ? args.path : ".";
+  const entries = await listFiles(resolve(workspaceRoot, path));
+  const output = entries.length > 0 ? entries.join("\n") : "(empty)";
+  console.log("[demo:05] local tool list_files output:");
+  console.log(output);
+  return output;
 }
 
 function validateEnv():
