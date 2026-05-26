@@ -113,6 +113,18 @@ sequenceDiagram
 
 这样读者能先把骨架吃透，再决定要不要补齐生产级能力。
 
+## 学习路径上的源码入口
+
+如果你已经理解三层架构，下一步不要立刻通读整个 monorepo。建议按下面路线走：
+
+| 想理解的问题 | 继续阅读 |
+| --- | --- |
+| 模型适配为什么要单独一层 | [pi-ai 模型协议层](/source/model-protocol) |
+| Agent Loop 到底怎么停下来 | [Agent Loop 主循环](/source/agent-loop) |
+| 工具、扩展、技能谁管谁 | [工具、扩展与资源加载](/source/tools-extensions) |
+| `session.prompt()` 为什么做这么多 preflight | [AgentSession 运行层](/source/agent-session) |
+| JSONL 会话树和压缩怎么恢复上下文 | [会话格式与压缩链路](/source/session-compaction) |
+
 ## 模块之间传递的不是“字符串”
 
 很多初学者会把 Agent 理解成“把 prompt 拼成字符串发给模型”。Pi 的设计更接近一组结构化协议在层与层之间流动：

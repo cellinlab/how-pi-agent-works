@@ -19,6 +19,16 @@ flowchart TB
 
 这个顺序的好处是，你先理解“消息和事件长什么样”，再看 loop 怎么消费它们，最后才进入会话、扩展、TUI 这些产品复杂度。
 
+本教程把这条路线拆成五个源码页：
+
+| 顺序 | 页面 | 读完应该得到什么 |
+| --- | --- | --- |
+| 1 | [pi-ai 模型协议层](/source/model-protocol) | 为什么 provider 差异不能泄漏到 Agent Loop |
+| 2 | [Agent Loop 主循环](/source/agent-loop) | 模型请求、工具执行、工具结果回写的最小闭环 |
+| 3 | [工具、扩展与资源加载](/source/tools-extensions) | 工具能力、扩展插槽和启动资源如何装配 |
+| 4 | [AgentSession 运行层](/source/agent-session) | `prompt()` preflight、持久化、runtime 重建 |
+| 5 | [会话格式与压缩链路](/source/session-compaction) | JSONL 树、compaction、branch summary 如何工作 |
+
 ## 三个包的边界
 
 | 包 | 先读文件 | 读懂后你应该能回答 |
@@ -91,3 +101,17 @@ sequenceDiagram
 | 会话、树与分支 | `packages/coding-agent/src/core/session-manager.ts` |
 | 上下文、技能与压缩 | `resource-loader.ts`、`system-prompt.ts`、`compaction/` |
 | 教学版目标项目 | `examples/teaching-agent/src/server/agent/*` |
+
+## 源码里的五个不变量
+
+源码读到后面，文件会很多。你可以反复用这五个不变量校准自己有没有跑偏：
+
+| 不变量 | 你应该在哪里看到 |
+| --- | --- |
+| 模型输入输出被统一成结构化消息和事件 | `pi-ai` |
+| Agent Loop 不直接做产品 I/O | `pi-agent-core` |
+| 工具副作用必须经过 schema、hook 和 tool result | `agent-loop.ts` 与 `tools/` |
+| 会话不是数组，而是 JSONL entry tree | `session-manager.ts` |
+| 长上下文用摘要 entry 承接，而不是删除历史 | `compaction/` |
+
+读源码时只要发现某段代码在保护这些不变量，就先理解它“为什么存在”，再看它“具体怎么写”。

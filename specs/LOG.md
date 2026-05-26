@@ -240,3 +240,23 @@
   - 不接真实模型 API。
   - 不引入生产级权限系统、多 session UI 或 OAuth。
   - 教程目标仍是让本科毕业生可以跟做一个保留 Pi 核心思想的教学版 Agent。
+
+### 15. 源码深挖与概念闭环
+
+- 新增 `docs/source/model-protocol.md`：
+  - 讲解 `@earendil-works/pi-ai` 为什么要把 provider 差异统一成 `Context`、`Message`、`AssistantMessageEvent`。
+  - 说明教学版 `MockModel` 在架构上对应真实 Pi 的模型协议层。
+- 新增 `docs/source/tools-extensions.md`：
+  - 讲解 Tool、Extension、ResourceLoader 的边界。
+  - 补充扩展事件生命周期、工具注册、技能、prompt template、context file 的职责区别。
+- 新增 `docs/source/session-compaction.md`：
+  - 讲解 JSONL entry tree、leaf 上下文构建、CompactionEntry、BranchSummaryEntry。
+  - 对照教学版 `JsonlSessionStore` 的简化范围。
+- 更新 `docs/source/source-map.md`：
+  - 加入五页源码阅读顺序。
+  - 总结源码里的五个不变量。
+- 更新 `docs/concepts/pi-architecture.md`：
+  - 从三层架构跳转到更细源码页面。
+- 更新 `docs/reference/sources.md`：
+  - 补充 Prompt Templates、provider、runtime、extensions、compaction 相关源码来源。
+- 更新 VitePress sidebar，将新增源码页面纳入第二部分。

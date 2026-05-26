@@ -13,6 +13,7 @@
 | [Compaction](https://pi.dev/docs/latest/compaction) | 上下文压缩、branch summary、cut point 规则 |
 | [Extensions](https://pi.dev/docs/latest/extensions) | 扩展、工具注册、事件 hook、命令、UI 能力 |
 | [Skills](https://pi.dev/docs/latest/skills) | 技能发现、按需加载、`SKILL.md` 结构 |
+| [Prompt Templates](https://pi.dev/docs/latest/prompt-templates) | 区分 prompt template、skill、context file 的职责 |
 
 ## GitHub 源码
 
@@ -21,14 +22,19 @@
 | [earendil-works/pi](https://github.com/earendil-works/pi) | Pi monorepo 总览 |
 | `packages/ai/src/types.ts` | `Message`、`ToolCall`、`AssistantMessageEvent` |
 | `packages/ai/src/stream.ts` | `streamSimple()` 统一模型调用入口 |
+| `packages/ai/src/providers/*` | 不同供应商如何适配成统一模型事件 |
 | `packages/agent/src/types.ts` | `AgentTool`、`AgentEvent`、`AgentLoopConfig` |
 | `packages/agent/src/agent-loop.ts` | Agent Loop、工具执行、stream assistant response |
 | `packages/agent/src/agent.ts` | Agent 状态、队列、订阅和生命周期 |
 | `packages/coding-agent/src/core/agent-session.ts` | session prompt 链路、扩展 hook、压缩、模型管理 |
+| `packages/coding-agent/src/core/agent-session-runtime.ts` | new/resume/fork/import 等运行时重建 |
 | `packages/coding-agent/src/core/session-manager.ts` | JSONL 会话、树结构、上下文构建 |
 | `packages/coding-agent/src/core/resource-loader.ts` | 扩展、技能、prompt、上下文文件加载 |
 | `packages/coding-agent/src/core/system-prompt.ts` | 系统提示词构造 |
+| `packages/coding-agent/src/core/extensions/types.ts` | 扩展 API、事件、工具、上下文类型 |
+| `packages/coding-agent/src/core/extensions/runner.ts` | 扩展事件分发和结果合并 |
 | `packages/coding-agent/src/core/tools/` | 内置 read/bash/edit/write/grep/find/ls 工具 |
+| `packages/coding-agent/src/core/compaction/` | compaction、branch summary、文件操作追踪 |
 
 ## 本教程中的实现
 
@@ -49,3 +55,9 @@
 | SDK 文档列出 `createAgentSession()`、`AgentSession`、事件、工具、ResourceLoader、会话管理 | 用来组织 `AgentSession` 运行层和源码阅读地图 |
 | Extensions 文档覆盖工具、命令、事件和 UI 扩展 | 用来解释 before/after tool hook 与扩展点 |
 | Session Format 文档说明 JSONL session file、entry 类型和树结构 | 用来讲 `id` / `parentId` / `leafId` 与 compaction entry |
+| Compaction 文档说明 auto-compaction 与 branch summarization 的触发和结构 | 用来补齐会话格式与压缩链路章节 |
+
+## 最近核对记录
+
+- 2026-05-26：重新核对官方 Docs、SDK、Extensions、Session Format、Compaction、Skills 和 GitHub 仓库页面。
+- 2026-05-26：本地源码参考目录为 `/tmp/pi-source`，确认包名与版本为 `@earendil-works/pi-ai`、`@earendil-works/pi-agent-core`、`@earendil-works/pi-coding-agent`、`@earendil-works/pi-tui`。

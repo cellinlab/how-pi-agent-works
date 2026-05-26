@@ -62,8 +62,11 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: "源码阅读地图", link: "/source/source-map" },
+          { text: "pi-ai 模型协议层", link: "/source/model-protocol" },
           { text: "Agent Loop 主循环", link: "/source/agent-loop" },
-          { text: "AgentSession 运行层", link: "/source/agent-session" }
+          { text: "工具、扩展与资源加载", link: "/source/tools-extensions" },
+          { text: "AgentSession 运行层", link: "/source/agent-session" },
+          { text: "会话格式与压缩链路", link: "/source/session-compaction" }
         ]
       },
       {
