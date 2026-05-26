@@ -1,0 +1,273 @@
+:root {
+  color: #172033;
+  background: #eef3f0;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+  min-height: 100vh;
+  padding: 18px;
+}
+
+.main-panel,
+.side-panel {
+  min-height: calc(100vh - 36px);
+  border: 1px solid #ccd8d3;
+  border-radius: 8px;
+  background: #fbfcfc;
+  box-shadow: 0 18px 45px rgba(22, 43, 35, 0.08);
+}
+
+.main-panel {
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #dce5e1;
+}
+
+.eyeline {
+  margin: 0 0 4px;
+  color: #64736e;
+  font-size: 13px;
+}
+
+h1,
+h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+h1 {
+  font-size: 26px;
+}
+
+h2 {
+  font-size: 15px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-button,
+.send-button {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #cbd8d3;
+  border-radius: 8px;
+  color: #1c4039;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.icon-button:disabled,
+.send-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.send-button {
+  border-color: #0f766e;
+  color: #ffffff;
+  background: #0f766e;
+}
+
+.chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+  padding: 18px 20px;
+}
+
+.empty-state {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  min-height: 320px;
+  color: #64736e;
+  text-align: center;
+}
+
+.message-card {
+  width: min(760px, 100%);
+  border: 1px solid #d6e0dc;
+  border-radius: 8px;
+  padding: 13px 14px;
+  background: #ffffff;
+}
+
+.message-user {
+  align-self: flex-end;
+  border-color: #b7d7d1;
+  background: #edf8f6;
+}
+
+.message-toolResult {
+  border-color: #d7c5a4;
+  background: #fff8e9;
+}
+
+.message-role {
+  margin-bottom: 8px;
+  color: #64736e;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.message-body p {
+  margin: 0 0 8px;
+  white-space: pre-wrap;
+  line-height: 1.58;
+}
+
+.message-body p:last-child {
+  margin-bottom: 0;
+}
+
+.tool-call-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: #7a4c05;
+}
+
+.tool-call-block code {
+  overflow-wrap: anywhere;
+  border-radius: 6px;
+  padding: 3px 6px;
+  background: rgba(122, 76, 5, 0.1);
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 16px 20px 18px;
+  border-top: 1px solid #dce5e1;
+}
+
+.composer input {
+  min-width: 0;
+  height: 42px;
+  border: 1px solid #cbd8d3;
+  border-radius: 8px;
+  padding: 0 13px;
+  background: #ffffff;
+}
+
+.composer input:focus {
+  outline: 2px solid rgba(15, 118, 110, 0.22);
+  border-color: #0f766e;
+}
+
+.error-line {
+  margin: 0;
+  padding: 0 20px 16px;
+  color: #b42318;
+}
+
+.side-panel {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
+.panel-section {
+  padding: 18px;
+  border-bottom: 1px solid #dce5e1;
+  overflow: auto;
+}
+
+.panel-section:last-child {
+  border-bottom: 0;
+}
+
+.tool-list,
+.event-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.tool-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  border: 1px solid #d6e0dc;
+  border-radius: 8px;
+  padding: 11px;
+  background: #ffffff;
+}
+
+.tool-card strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 13px;
+}
+
+.tool-card p {
+  margin: 0;
+  color: #64736e;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.event-row {
+  overflow-wrap: anywhere;
+  border-left: 3px solid #0f766e;
+  padding: 7px 9px;
+  background: #f3f7f5;
+  color: #2f3c38;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .main-panel,
+  .side-panel {
+    min-height: auto;
+  }
+
+  .side-panel {
+    grid-template-rows: auto auto;
+  }
+}
