@@ -12,7 +12,7 @@
 
 ## 状态模型
 
-React 只保存服务端返回的状态：
+React 主要保存服务端返回的状态：
 
 ```ts
 type SessionResponse = {
@@ -26,16 +26,31 @@ type SessionResponse = {
 提交 prompt 后：
 
 ```ts
-const response = await fetch("/api/prompt", {
+const response = await fetch("/api/runs", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ text })
 });
-const nextState = await response.json();
-setSession(nextState);
+const { runId } = await response.json();
+const source = new EventSource(`/api/runs/${runId}/events`);
 ```
 
-真实产品里可以改成 SSE 或 WebSocket 流式推送。教学版先用普通 JSON，是为了让链路更容易读。
+`POST /api/prompt` 仍然可以用于 curl 调试；浏览器默认走 SSE。每收到一个 `message_start`、`message_update`、`tool_execution_start/end`，前端就把事件追加到时间线，并用消息事件增量更新聊天区。收到 `run_done` 后，再用完整 session 覆盖本地状态，避免增量过程中漏掉 entry 或工具列表变化。
+
+```mermaid
+sequenceDiagram
+  participant UI as React
+  participant API as Express
+  participant Loop as runAgentLoop
+
+  UI->>API: POST /api/runs
+  API-->>UI: runId
+  UI->>API: GET /api/runs/:id/events
+  API->>Loop: runAgentLoop(onEvent)
+  Loop-->>API: AgentEvent
+  API-->>UI: SSE AgentEvent
+  API-->>UI: run_done + full session
+```
 
 ## 为什么展示事件时间线
 
@@ -46,6 +61,7 @@ setSession(nextState);
 | 模型没有调用工具 | 没有 `tool_execution_start` |
 | 工具参数错 | `tool_execution_start.args` |
 | 工具执行失败 | `tool_execution_end.isError` |
+| 工具被权限拦截 | `tool_permission.action = block` |
 | 模型无限循环 | 多个 turn 持续出现 tool call |
 
 事件时间线是调试 Agent 的放大镜。
@@ -65,7 +81,7 @@ setSession(nextState);
 
 | 当前实现 | 可以扩展为 |
 | --- | --- |
-| POST 返回完整 JSON | SSE 实时推送 `AgentEvent` |
+| SSE 推送 `AgentEvent` | provider token 级 delta、取消和重试 |
 | 简单事件列表 | 可折叠 turn / message / tool 分组 |
 | 文本工具结果 | 代码高亮、diff 视图、图片预览 |
 | 单 session | session picker 和 tree viewer |

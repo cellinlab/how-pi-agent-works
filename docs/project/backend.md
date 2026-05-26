@@ -91,7 +91,11 @@ export interface TeachingModel {
 | --- | --- | --- |
 | `GET` | `/api/session` | 返回当前消息、事件和可用工具 |
 | `POST` | `/api/prompt` | 追加用户消息，运行 Agent，返回最新状态 |
+| `POST` | `/api/runs` | 创建一次流式 run，返回 `runId` |
+| `GET` | `/api/runs/:runId/events` | 用 SSE 推送 run 内的 AgentEvent |
 | `POST` | `/api/reset` | 清空教学会话 |
+
+`POST /api/prompt` 仍然保留，方便 curl 和一次性 API 调试。前端默认使用 `/api/runs` + SSE：后端会把已经发生的事件缓存在 run record 里，浏览器连接后先回放历史事件，再继续接收新事件。run 结束时发送 `run_done`，前端再用服务端返回的完整 session 对齐最终状态。
 
 ## 替换真实模型的位置
 

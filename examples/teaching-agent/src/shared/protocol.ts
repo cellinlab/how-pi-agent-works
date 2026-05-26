@@ -114,3 +114,12 @@ export type SessionResponse = {
   tools: ToolDefinition[];
   entries: SessionEntry[];
 };
+
+export type CreateRunResponse = {
+  runId: string;
+};
+
+export type RunStreamEvent =
+  | AgentEvent
+  | { type: "run_done"; session: SessionResponse }
+  | { type: "run_error"; error: string; session: SessionResponse };

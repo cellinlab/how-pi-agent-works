@@ -362,7 +362,7 @@ Pi 的真实系统可以按三层理解：
   - `npm run teaching-agent:typecheck` 通过。
   - `npm run docs:build` 通过。
 
-### Commit 19：SSE 流式事件 API 与前端增量 UI（待开始）
+### Commit 19：SSE 流式事件 API 与前端增量 UI（已完成）
 
 - 新增 `POST /api/runs` 和 `GET /api/runs/:runId/events`。
 - 保留 `POST /api/prompt` 作为一次性返回兼容接口。

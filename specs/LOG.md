@@ -568,3 +568,31 @@
   - `npm run teaching-agent:build` 成功。
   - `npm run docs:build` 成功。
   - `git diff --check` 成功。
+
+### 29. SSE 流式事件 API 与前端增量 UI
+
+- 后端新增流式 run API：
+  - `POST /api/runs` 创建 run，返回 `runId`。
+  - `GET /api/runs/:runId/events` 通过 SSE 推送事件。
+  - `POST /api/prompt` 保留为一次性返回兼容接口。
+- 后端执行链路调整：
+  - 抽出 `executePrompt()`，统一处理用户消息、compaction、Agent Loop、持久化。
+  - run record 会缓存已经发生的事件，浏览器连接后先回放，再继续接收新事件。
+  - run 结束时发送 `run_done`，错误时发送 `run_error`。
+  - 增加简单 active run guard，避免同一教学会话并发写 session。
+- 前端改为默认使用 SSE：
+  - 提交 prompt 后先请求 `/api/runs`。
+  - 再使用 `EventSource` 订阅 `/api/runs/:runId/events`。
+  - 根据 `message_start`、`message_update`、`message_end` 增量更新聊天区。
+  - 根据所有 AgentEvent 增量更新 Event Timeline。
+  - 收到 `run_done` 后用完整 session 对齐最终状态。
+- 文档同步：
+  - 更新后端 API 表。
+  - 更新前端状态模型与 SSE 时序图。
+  - 更新扩展方向页，将 SSE 和增量 UI 标记为已实现。
+- 验证：
+  - `npm run teaching-agent:test` 成功，9 个测试通过。
+  - `npm run teaching-agent:typecheck` 成功。
+  - `npm run teaching-agent:build` 成功。
+  - `npm run docs:build` 成功。
+  - 启动 `npm run teaching-agent:dev` 后，用 curl 验证 `/api/runs` 与 SSE 事件流，确认包含 `tool_permission`、`agent_end` 和 `run_done`。

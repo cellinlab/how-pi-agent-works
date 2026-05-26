@@ -261,8 +261,8 @@ Agent 工程的难点不在 happy path，而在这些边界：
 
 1. 抽出 `TeachingModel` 接口，让 `MockModel` 和真实 adapter 都实现它。（已在教学版实现）
 2. 给 `runAgentLoop()` 加 `beforeToolCall`，先支持 `allow/block/rewrite`。（已在教学版实现）
-3. 把 `POST /api/prompt` 改成 `POST /api/runs` + SSE events。
-4. 前端把一次性消息列表改成增量消息状态。
+3. 把 `POST /api/prompt` 改成 `POST /api/runs` + SSE events。（已在教学版实现，`/api/prompt` 保留为兼容接口）
+4. 前端把一次性消息列表改成增量消息状态。（已在教学版实现）
 5. 暴露 `/api/branch`，做最小会话树 UI。
 6. 有树 UI 后，再补 branch summary 和更细的 compaction details。
 
