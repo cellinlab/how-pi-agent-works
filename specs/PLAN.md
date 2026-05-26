@@ -424,6 +424,18 @@ Pi 的真实系统可以按三层理解：
   - 若本机已登录/可链接项目，则执行生产部署。
   - 若缺少登录或项目授权，记录阻塞点和下一步命令。
 
+## 站点社媒链接修正计划
+
+用户要求 VitePress 站点中的 GitHub 指向本教程项目地址，并增加 X/Twitter 社媒地址。本阶段只修正站点导航/联系方式，不修改资料来源页面中对 Pi 官方源码仓库的引用。
+
+### Commit 24：VitePress GitHub 与 X 链接修正（已完成）
+
+- 将 VitePress `socialLinks` 的 GitHub 改为 `https://github.com/cellinlab/how-pi-agent-works`。
+- 新增 X/Twitter social link：`https://x.com/cellinlab`。
+- 在 `docs/contact.md` 和 README 联系方式中补充 X 地址。
+- 运行 `npm run docs:build` 验证 VitePress 配置。
+- 如构建通过，重新生产部署站点。
+
 ## 历史计划：内容补强收口（已完成并归档）
 
 以下计划来自早期内容补强阶段，已经由后续 Commit 1-4 以及 Commit 5-16 逐步完成。保留它是为了追溯任务演进，不再作为待执行计划。

@@ -121,7 +121,8 @@ export default defineConfig({
       next: "下一节"
     },
     socialLinks: [
-      { icon: "github", link: "https://github.com/earendil-works/pi" }
+      { icon: "github", link: "https://github.com/cellinlab/how-pi-agent-works" },
+      { icon: "x", link: "https://x.com/cellinlab" }
     ],
     editLink: {
       pattern: "https://github.com/cellinlab/how-pi-agent-works/edit/main/docs/:path",

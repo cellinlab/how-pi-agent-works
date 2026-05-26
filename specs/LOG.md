@@ -419,6 +419,26 @@
   - Alias：`https://how-pi-agent-works.vercel.app`。
   - Inspect URL：`https://vercel.com/cellinlabs-projects/how-pi-agent-works/5ysThdxkfRv5hp2o2LRqkj2hRrHp`。
 
+### 34. VitePress GitHub 与 X 链接修正
+
+- 修正 VitePress 顶部社媒链接：
+  - GitHub 从 Pi 官方仓库改为本教程项目 `https://github.com/cellinlab/how-pi-agent-works`。
+  - 新增 X/Twitter：`https://x.com/cellinlab`。
+- 补充联系方式：
+  - `docs/contact.md` 增加 X/Twitter 地址。
+  - README 的联系方式同步增加 X/Twitter 地址。
+- 保留资料来源页中的 Pi 官方 GitHub 引用，不把源码参考误改成教程仓库。
+- 验证：
+  - `npm run docs:build` 成功；仍有 VitePress/Rollup chunk size warning，不影响构建。
+  - `git diff --check` 成功。
+  - `rg` 确认 `docs/.vitepress/config.mts` 的 `socialLinks` 和 `editLink` 均指向 `cellinlab/how-pi-agent-works`。
+  - 线上首页 HTML 已包含 `https://github.com/cellinlab/how-pi-agent-works` 与 `https://x.com/cellinlab`。
+- 部署：
+  - 执行 `npx vercel deploy --prod --yes` 成功。
+  - Production URL：`https://how-pi-agent-works-cybzunqbz-cellinlabs-projects.vercel.app`。
+  - Alias：`https://how-pi-agent-works.vercel.app`。
+  - Inspect URL：`https://vercel.com/cellinlabs-projects/how-pi-agent-works/GmGysqWVUNTLygCvpqMKWG6LruTU`。
+
 ### 22. Provider adapter 与真实模型教学链路
 
 - 更新 `examples/demos/05-openai-compatible.ts`：
